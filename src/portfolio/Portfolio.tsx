@@ -455,6 +455,9 @@ const RotatingTagline: React.FC = () => {
 // Scroll XP badge with celebration
 const XPBadge: React.FC = () => {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Do not render on phones / narrow screens
+  const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+  if (isMobile) return null;
   const levels = [
     { name: 'Intern', threshold: 0 },
     { name: 'Engineer', threshold: 0.15 },
