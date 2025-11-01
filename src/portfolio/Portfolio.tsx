@@ -30,10 +30,23 @@ const Section: React.FC<{ id: string; title: string; children: React.ReactNode }
 // GitHub highlights removed per user request.
 
 export const Portfolio: React.FC = () => {
+  const [showSplash, setShowSplash] = React.useState<boolean>(() => {
+    // Do not show splash during SSR (tests) to keep deterministic output
+    if (typeof window === 'undefined') return false;
+    return true;
+  });
+  React.useEffect(() => {
+    if (!showSplash) return;
+    // Safety timeout: force hide at 3.1s now
+    const t = setTimeout(() => setShowSplash(false), 3100);
+    return () => clearTimeout(t);
+  }, [showSplash]);
   return (
     <div className="app">
+      {showSplash && <SplashScreen />}
       <FloatingIcons />
       <SectionRail />
+      <XPBadge />
       <Header />
       <Hero />
       <main>
@@ -193,6 +206,7 @@ const Hero: React.FC = () => {
   <Img asset="headshot" />
   <h2 className="hero-title">Software Engineer crafting resilient & performant products.</h2>
   <p className="hero-sub">Focused on clean architecture, automation, performance optimization and developer experience. I build reliable pipelines and user-centric full-stack applications.</p>
+        <RotatingTagline />
         <div className="hero-cta">
           <a href="#projects" className="btn primary">View Projects</a>
           <a href="mailto:ahmedosamadiab@gmail.com" className="btn secondary">Get in Touch</a>
@@ -259,7 +273,6 @@ const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
   { id: 'projects', label: 'Projects', icon: '🗂️' },
   { id: 'contact', label: 'Contact', icon: '✉️' }
 ];
-
 const SectionRail: React.FC = () => {
   const [active, setActive] = React.useState<string>('experience');
   React.useEffect(() => {
@@ -331,3 +344,171 @@ const FloatingIcons: React.FC = () => {
 
 
 export default Portfolio;
+
+// Simple timed splash screen
+const SplashScreen: React.FC = () => {
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fullTitle = 'Ahmed Osama';
+  const fullSub = 'Software Engineer @ Microsoft';
+  const [titleChars, setTitleChars] = React.useState(0);
+  const [subChars, setSubChars] = React.useState(0);
+  React.useEffect(() => {
+    if (prefersReduced) {
+      setTitleChars(fullTitle.length);
+      setSubChars(fullSub.length);
+      return;
+    }
+    const start = performance.now();
+  const titleDuration = 800; // ms typing name
+  const subDuration = 700;  // ms typing role
+  const typingTotal = titleDuration + subDuration; // 1500ms
+  const totalVisible = 3000; // want splash up ~3s total
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      if (elapsed < titleDuration) {
+        const ratio = elapsed / titleDuration;
+        setTitleChars(Math.min(fullTitle.length, Math.floor(ratio * fullTitle.length)));
+      } else {
+        setTitleChars(fullTitle.length);
+        const subElapsed = elapsed - titleDuration;
+        const subRatio = subElapsed / subDuration;
+        setSubChars(Math.min(fullSub.length, Math.floor(subRatio * fullSub.length)));
+      }
+      if (elapsed < typingTotal) {
+        requestAnimationFrame(tick);
+      } else {
+        setTitleChars(fullTitle.length);
+        setSubChars(fullSub.length);
+        // Schedule fade out so it starts ~600ms before removal (fade duration .6s)
+  const fadeStart = totalVisible - 600; // 2400ms
+        setTimeout(() => {
+          const root = document.querySelector('.splash');
+          if (root) root.classList.add('splash-hide');
+        }, fadeStart - elapsed);
+      }
+    };
+    const raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [prefersReduced]);
+  return (
+    <div className="splash" role="status" aria-label="Intro splash">
+      <div className="splash-inner">
+        <h1 className="splash-title">
+          {fullTitle.slice(0, titleChars)}
+          {!prefersReduced && titleChars < fullTitle.length && <span className="caret" aria-hidden="true">|</span>}
+        </h1>
+        <p className="splash-sub">
+          {fullSub.slice(0, subChars)}
+          {!prefersReduced && subChars < fullSub.length && <span className="caret" aria-hidden="true">|</span>}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Humorous rotating coding tagline
+const RotatingTagline: React.FC = () => {
+  const phrases = [
+    'console.log("Hello, world ✨")',
+    'while (coffee) { code(); }',
+    'git commit -m "Make it faster"',
+    'docker ps | grep inspiration',
+    'const bug = feature?.notYet()',
+    'npm run refactor --silent',
+    '/* TODO: name this variable better */'
+  ];
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [index, setIndex] = React.useState(0);
+  const [display, setDisplay] = React.useState('');
+  const [deleting, setDeleting] = React.useState(false);
+  React.useEffect(() => {
+    if (prefersReduced) return; // show static first phrase
+    const full = phrases[index];
+    const speed = deleting ? 24 : 42; // typing vs deleting speed
+    const timeout = setTimeout(() => {
+      if (!deleting) {
+        // typing
+        const nextLen = display.length + 1;
+        setDisplay(full.slice(0, nextLen));
+        if (nextLen === full.length) {
+          // pause then start deleting
+          setTimeout(() => setDeleting(true), 900);
+        }
+      } else {
+        const nextLen = display.length - 1;
+        setDisplay(full.slice(0, nextLen));
+        if (nextLen === 0) {
+          setDeleting(false);
+          setIndex(i => (i + 1) % phrases.length);
+        }
+      }
+    }, speed);
+    return () => clearTimeout(timeout);
+  }, [display, deleting, index, prefersReduced]);
+  return (
+    <div className="rotating-tagline" aria-live="polite">
+      <code>{prefersReduced ? phrases[0] : display}<span className="rt-caret" aria-hidden="true">|</span></code>
+    </div>
+  );
+};
+
+// Scroll XP badge with celebration
+const XPBadge: React.FC = () => {
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const levels = [
+    { name: 'Intern', threshold: 0 },
+    { name: 'Engineer', threshold: 0.15 },
+    { name: 'Refactorer', threshold: 0.35 },
+    { name: 'Optimizer', threshold: 0.55 },
+    { name: 'Architect', threshold: 0.75 },
+    { name: 'Legend', threshold: 0.92 }
+  ];
+  const [progress, setProgress] = React.useState(0);
+  const [level, setLevel] = React.useState(levels[0].name);
+  const [celebrate, setCelebrate] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const scrollTop = window.scrollY || doc.scrollTop;
+      const scrollHeight = doc.scrollHeight - doc.clientHeight;
+      const p = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+      setProgress(p);
+      for (let i = levels.length - 1; i >= 0; i--) {
+        if (p >= levels[i].threshold) { setLevel(levels[i].name); break; }
+      }
+      if (p >= 0.995 && !celebrate) setCelebrate(true);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [celebrate]);
+  const percent = Math.round(progress * 100);
+  // When celebration starts, schedule hide after animation (~3.2s confetti + buffer)
+  React.useEffect(() => {
+    if (celebrate && !hidden) {
+      const t = setTimeout(() => setHidden(true), prefersReduced ? 1800 : 3800);
+      return () => clearTimeout(t);
+    }
+  }, [celebrate, hidden, prefersReduced]);
+  const message = !celebrate ? 'Keep scrolling to celebrate!' : '🎉 YOU made it!';
+  if (hidden) return null;
+  return (
+    <div className={`xp-badge ${celebrate ? 'celebrate' : ''}`} aria-live="polite" aria-label={`Scroll progress ${percent}%`}>      
+      <div className="xp-inner">
+        <span className="xp-level">{level}</span>
+        <div className="xp-bar"><div className="xp-fill" style={{ width: `${percent}%` }} /></div>
+        <span className="xp-percent">{percent}%</span>
+        <div className="xp-msg" aria-live="polite">{message}</div>
+        {celebrate && !prefersReduced && (
+          <div className="confetti" aria-hidden="true">
+            {Array.from({ length: 18 }).map((_, i) => <span key={i} className="piece" style={{ ['--ci' as any]: i }} />)}
+          </div>
+        )}
+        {celebrate && prefersReduced && (
+          <div className="celebrate-static" aria-hidden="true">🎉</div>
+        )}
+      </div>
+    </div>
+  );
+};

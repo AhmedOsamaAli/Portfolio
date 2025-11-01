@@ -1,0 +1,24 @@
+# Node
+node_modules/
+# Build output
+dist/
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# Env
+.env*
+# Editor
+.vscode/
+*.DS_Store
+Thumbs.db
+# Coverage
+coverage/
+# Optional caches
+.cache/
+.next/
+# TypeScript build info
+*.tsbuildinfo
+# Misc
+*.log
