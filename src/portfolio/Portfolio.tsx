@@ -45,7 +45,6 @@ export const Portfolio: React.FC = () => {
     <div className="app">
       {showSplash && <SplashScreen />}
       <FloatingIcons />
-      <BugHunt />
       <SectionRail />
       <XPBadge />
       <Header />
@@ -453,119 +452,6 @@ const RotatingTagline: React.FC = () => {
   );
 };
 
-// Floating Bug Hunt (periodic bug appears, click to squash)
-const BugHunt: React.FC = () => {
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const [bugs, setBugs] = React.useState<{ id: number; x: number; y: number; squashed: boolean; vx: number; vy: number; phraseIndex: number; lastPhraseTs: number }[]>([]);
-  const phrases = [
-    "i will crash this portfolio",
-    "allocating chaos()...",
-    "refactor me if you can",
-    "so many divs... so little time",
-    "your tests forgot about me",
-    "console.warn('bug detected')",
-    "ship first, fix later"
-  ];
-  const [count, setCount] = React.useState(0);
-  // Listen for scroll celebration to spawn exactly one bug
-  React.useEffect(() => {
-    const onCelebrate = () => {
-      // Block on mobile similar to XPBadge; only spawn on wider viewports
-      const isMobile = window.matchMedia('(max-width: 850px)').matches;
-      if (isMobile) return;
-      setBugs(b => {
-        if (b.length > 0) return b; // already spawned
-        const id = Date.now() + Math.random();
-        const x = Math.random() * 85 + 5;
-        const y = Math.random() * 70 + 10;
-        const vx = (Math.random() * 0.08 + 0.02) * (Math.random() < 0.5 ? -1 : 1);
-        const vy = (Math.random() * 0.08 + 0.02) * (Math.random() < 0.5 ? -1 : 1);
-        return [{ id, x, y, squashed: false, vx, vy, phraseIndex: 0, lastPhraseTs: performance.now() }];
-      });
-    };
-    window.addEventListener('portfolio-celebrated', onCelebrate);
-    return () => window.removeEventListener('portfolio-celebrated', onCelebrate);
-  }, []);
-  const squash = (id: number) => {
-  setBugs(b => b.map(bg => bg.id === id ? { ...bg, squashed: true } : bg));
-    setCount(c => c + 1);
-    setTimeout(() => setBugs(b => b.filter(bg => bg.id !== id)), 900);
-  };
-  // Run away after 5s if not squashed
-  // Vanish after 10 seconds if not squashed (10000 ms)
-  React.useEffect(() => {
-    if (bugs.length === 0) return;
-    const timers: number[] = [];
-    bugs.forEach(bg => {
-      if (bg.squashed) return;
-      const t = window.setTimeout(() => {
-        setBugs(b => b.map(bug => bug.id === bg.id ? { ...bug, squashed: true } : bug));
-        setTimeout(() => setBugs(b => b.filter(bug => bug.id !== bg.id)), 900);
-  }, 10000); // 10 seconds
-      timers.push(t);
-    });
-    return () => timers.forEach(t => clearTimeout(t));
-  }, [bugs]);
-  // Movement loop
-  React.useEffect(() => {
-    if (prefersReduced) return; // skip motion
-    let raf: number;
-    const tick = () => {
-      setBugs(b => b.map(bg => {
-        if (bg.squashed) return bg; // no movement if squashed
-        let { x, y, vx, vy, phraseIndex, lastPhraseTs } = bg;
-        x += vx;
-        y += vy;
-        // bounce within viewport percentages
-        if (x < 3 || x > 92) vx *= -1;
-        if (y < 8 || y > 85) vy *= -1;
-        // occasional random jitter change
-        if (Math.random() < 0.01) {
-          vx += (Math.random() - 0.5) * 0.04;
-          vy += (Math.random() - 0.5) * 0.04;
-        }
-        // clamp velocities
-        vx = Math.max(Math.min(vx, 0.15), -0.15);
-        vy = Math.max(Math.min(vy, 0.15), -0.15);
-        // phrase rotation every ~3.8s
-        const now = performance.now();
-        if (now - lastPhraseTs > 3800) {
-          phraseIndex = (phraseIndex + 1) % phrases.length;
-          lastPhraseTs = now;
-        }
-        return { ...bg, x: Math.max(3, Math.min(92, x)), y: Math.max(8, Math.min(85, y)), vx, vy, phraseIndex, lastPhraseTs };
-      }));
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [prefersReduced]);
-  // accessibility announcement for total bugs fixed
-  const liveMsg = `Total bugs fixed: ${count}`;
-  return (
-    <div className="bug-hunt-layer" aria-live="polite" aria-label={liveMsg}> 
-      {bugs.map(bg => (
-        <div key={bg.id} style={{ left: bg.x + 'vw', top: bg.y + 'vh' }} className="bug-wrap side">
-          <button
-            onClick={() => !bg.squashed && squash(bg.id)}
-            className={`bug ${bg.squashed ? 'squashed' : ''}`}
-            aria-label={bg.squashed ? 'Bug squashed' : 'Click to squash bug'}
-          >
-            {!bg.squashed ? '🐞' : '💥'}
-          </button>
-          {!bg.squashed && (
-            <div className="bug-bubble side" role="note" aria-label={`Bug says: ${phrases[bg.phraseIndex]}`}>{phrases[bg.phraseIndex]}</div>
-          )}
-        </div>
-      ))}
-      {/* simple badge showing count */}
-      {count > 0 && (
-        <div className="bug-counter" aria-label={liveMsg}>🪲 {count}</div>
-      )}
-    </div>
-  );
-};
-
 // Scroll XP badge with celebration
 const XPBadge: React.FC = () => {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -605,8 +491,6 @@ const XPBadge: React.FC = () => {
   React.useEffect(() => {
     if (celebrate && !hidden) {
       const t = setTimeout(() => setHidden(true), prefersReduced ? 1800 : 3800);
-      // Dispatch custom event for post-celebration features (like bug spawn)
-      window.dispatchEvent(new CustomEvent('portfolio-celebrated'));
       return () => clearTimeout(t);
     }
   }, [celebrate, hidden, prefersReduced]);
