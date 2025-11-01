@@ -7,7 +7,8 @@ export default defineConfig(({ mode }) => {
   // Placeholder: can extend to use loadEnv(mode, process.cwd()) when @types/node added.
   return {
     plugins: [react()],
-    base: '/',
+    // If hosted at https://ahmedosamaali.github.io/Portfolio/ we need base set to '/Portfolio/'.
+    base: '/Portfolio/',
     server: { port: 5173 }
   };
 });
