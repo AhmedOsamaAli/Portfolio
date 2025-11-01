@@ -33,6 +33,7 @@ export const Portfolio: React.FC = () => {
   return (
     <div className="app">
       <FloatingIcons />
+      <SectionRail />
       <Header />
       <Hero />
       <main>
@@ -247,6 +248,53 @@ const Footer: React.FC = () => (
     <small>&copy; {new Date().getFullYear()} Ahmed Osama.</small>
   </footer>
 );
+
+// Right side section navigation rail
+const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
+  { id: 'experience', label: 'Experience', icon: '💼' },
+  { id: 'internships', label: 'Internships', icon: '🛠️' },
+  { id: 'education', label: 'Education', icon: '🎓' },
+  { id: 'skills', label: 'Skills', icon: '🧠' },
+  { id: 'achievements', label: 'Achievements', icon: '🏅' },
+  { id: 'projects', label: 'Projects', icon: '🗂️' },
+  { id: 'contact', label: 'Contact', icon: '✉️' }
+];
+
+const SectionRail: React.FC = () => {
+  const [active, setActive] = React.useState<string>('experience');
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -60% 0px', threshold: 0.2 }
+    );
+    sectionMeta.forEach(meta => {
+      const el = document.getElementById(meta.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <nav className="section-rail" aria-label="Section navigation">
+      <ul>
+        {sectionMeta.map(m => (
+          <li key={m.id}>
+            <a href={`#${m.id}`} className={m.id === active ? 'active' : ''} aria-current={m.id === active ? 'true' : undefined}>
+              <span className="icon" aria-hidden="true">{m.icon}</span>
+              <span className="sr-only">{m.label}</span>
+              <span className="tooltip" role="tooltip">{m.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
 
 // Subtle floating programming icons background layer
 const techIcons = [

@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "group": "build",
+      "problemMatcher": "$tsc-watch",
+      "detail": "Start Vite dev server"
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "npm run test",
+      "group": "test",
+      "problemMatcher": ["$tsc"],
+      "detail": "Run Vitest once"
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "npm run build",
+      "group": "build",
+      "problemMatcher": "$tsc",
+      "detail": "Build production assets"
+    },
+    {
+      "label": "Preview",
+      "type": "shell",
+      "command": "npm run preview",
+      "group": "none",
+      "detail": "Preview production dist"
+    },
+    {
+      "label": "CI (test+build)",
+      "type": "shell",
+      "command": "npm run ci",
+      "group": "test",
+      "problemMatcher": ["$tsc"],
+      "detail": "Run tests then build"
+    }
+  ]
+}

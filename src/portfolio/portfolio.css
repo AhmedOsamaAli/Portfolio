@@ -110,6 +110,22 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   .hero-bg {animation:none;}
 }
 
+/* Right side section rail */
+.section-rail {position:fixed;top:50%;right:1.15rem;transform:translateY(-50%);z-index:60;display:flex;flex-direction:column;}
+.section-rail ul {list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.85rem;}
+.section-rail a {position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--border);text-decoration:none;font-size:1.25rem;transition:background .35s,border-color .35s,transform .35s, box-shadow .35s;color:var(--accent-title);}
+.section-rail a .tooltip {position:absolute;right:54px;top:50%;transform:translateY(-50%) translateX(8px);background:var(--accent-title);color:#fff;font-size:.65rem;padding:6px 10px;border-radius:8px;opacity:0;pointer-events:none;white-space:nowrap;letter-spacing:.5px;box-shadow:0 8px 20px -6px rgba(0,0,0,0.3);transition:opacity .3s, transform .35s;}
+.section-rail a:hover .tooltip,.section-rail a:focus-visible .tooltip {opacity:1;transform:translateY(-50%) translateX(0);}
+.section-rail a.active {background:var(--gradient);color:#fff;border-color:transparent;box-shadow:0 8px 24px -6px rgba(0,0,0,0.35);}
+.section-rail a.active .tooltip {background:var(--accent-line);}
+.section-rail a:hover {transform:translateY(-4px);}
+.section-rail a:active {transform:translateY(-2px);} 
+.section-rail .icon {filter:drop-shadow(0 3px 6px rgba(0,0,0,.25));}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0;}
+@media (max-width:1100px){
+  .section-rail {display:none;}
+}
+
 /* Floating programming icons background */
 .floating-icons {position:fixed;inset:0;pointer-events:none;z-index:-2;overflow:hidden;}
 .floating-icon {position:absolute;top:50%;left:50%;width:42px;height:42px;animation:drift 38s linear infinite, spin 22s linear infinite;opacity:0.55;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.25));}
