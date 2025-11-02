@@ -127,7 +127,7 @@ export const achievements: AchievementItem[] = [
 export const projects: ProjectItem[] = [
   {
     name: 'Marvel-Wargame',
-    url: '', // TODO: Add repository URL
+    url: 'https://github.com/AhmedOsamaAli/Marvel-War-Game',
     start: 'Mar 2022',
     end: 'Jun 2022',
     bullets: [
@@ -140,7 +140,7 @@ export const projects: ProjectItem[] = [
   },
   {
     name: 'GIU Bachelor Portal',
-    url: '', // TODO: Add repository or live URL
+    url: 'https://github.com/AhmedOsamaAli/GIU-bachelor-Portal',
     start: 'Oct 2022',
     end: 'Jan 2023',
     bullets: [
@@ -179,7 +179,7 @@ export const projects: ProjectItem[] = [
   },
   {
     name: 'E-commerce Platform',
-    url: '', // TODO: Add repository or live URL
+    url: 'https://github.com/AhmedOsamaAli/Ecommerce-Application',
     start: 'Oct 2023',
     end: 'Dec 2023',
     bullets: [
