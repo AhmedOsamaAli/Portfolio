@@ -47,10 +47,7 @@ const ParticlesBackground: React.FC = () => {
         value: ['#2A5CAA', '#3A6CB7', '#1A4B99', '#5B8FCC']
       },
       shape: {
-        type: ['circle', 'triangle', 'edge', 'polygon'],
-        polygon: {
-          sides: 6
-        }
+        type: ['circle', 'triangle', 'edge']
       },
       opacity: {
         value: { min: 0.1, max: 0.3 }

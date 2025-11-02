@@ -1,5 +1,5 @@
 import React from 'react';
-import { experiences, education, skills, achievements, projects } from './data';
+import { experiences, internships, education, skills, achievements, projects } from './data';
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
@@ -75,6 +75,23 @@ export const Portfolio: React.FC = () => {
       <main>
         <Section id="experience" title="Experience">
           {experiences.map(exp => (
+            <Card3D key={exp.company + exp.start} className="card">
+              <header>
+                    <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
+                    {exp.logo && (
+                      exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
+                    )}
+                <span className="dates">{exp.start} – {exp.end}</span>
+                <span className="location">{exp.location}</span>
+              </header>
+              <ul>
+                {exp.bullets.map(b => <li key={b}>{b}</li>)}
+              </ul>
+            </Card3D>
+          ))}
+        </Section>
+        <Section id="internships" title="Internships">
+          {internships.map(exp => (
             <Card3D key={exp.company + exp.start} className="card">
               <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
@@ -330,7 +347,7 @@ const Hero: React.FC = () => {
 
 const Nav: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const sections = ['experience','education','skills','achievements','projects','contact'];
+  const sections = ['experience','internships','education','skills','achievements','projects','contact'];
   
   const handleLinkClick = () => {
     setIsOpen(false);
@@ -395,6 +412,7 @@ const Footer: React.FC = () => (
 // Right side section navigation rail
 const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
   { id: 'experience', label: 'Experience', icon: '💼' },
+  { id: 'internships', label: 'Internships', icon: '🛠️' },
   { id: 'education', label: 'Education', icon: '🎓' },
   { id: 'skills', label: 'Skills', icon: '🧠' },
   { id: 'achievements', label: 'Achievements', icon: '🏅' },

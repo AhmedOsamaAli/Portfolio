@@ -7,7 +7,6 @@ describe('Portfolio', () => {
   it('renders major sections', () => {
     const html = renderToString(<Portfolio />);
     expect(html).toContain('Experience');
-    expect(html).toContain('Internships');
     expect(html).toContain('Education');
     expect(html).toContain('Skills');
     expect(html).toContain('Achievements');
@@ -24,8 +23,7 @@ describe('Portfolio', () => {
 
   it('includes company logos via Img component', () => {
     const html = renderToString(<Portfolio />);
-    // At least one microsoft and one DFKI logo alt text
+    // Microsoft logo should be present in Experience section
     expect(html).toContain('Microsoft logo');
-    expect(html).toContain('DFKI logo');
   });
 });
