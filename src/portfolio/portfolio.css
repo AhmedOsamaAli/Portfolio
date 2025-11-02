@@ -42,7 +42,7 @@ nav a:hover {color:var(--accent-title);background:rgba(42,92,170,0.08);}
 main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 .section {margin-bottom:3.5rem;scroll-margin-top:90px;} /* ensures anchor links account for sticky header height */
 .section h2 {margin:0 0 1.25rem;font-size:1.3rem;letter-spacing:0.5px;color:var(--accent-title);border-bottom:2px solid var(--accent-line);display:inline-block;padding-bottom:4px;font-weight:600;}
-.card {background:var(--glass);backdrop-filter:blur(14px);padding:1.1rem 1.25rem;border:1px solid var(--border);border-radius:18px;margin-bottom:1.25rem;box-shadow:0 8px 24px -8px rgba(0,0,0,0.25);transition:transform .35s cubic-bezier(.17,.67,.27,1), box-shadow .35s, border-color .35s;} 
+.card {background:var(--glass);backdrop-filter:blur(14px);padding:1.1rem 1.25rem;border:1px solid var(--border);border-radius:18px;margin-bottom:1.25rem;box-shadow:0 8px 24px -8px rgba(0,0,0,0.25);transition:transform .35s cubic-bezier(.17,.67,.27,1), box-shadow .35s, border-color .35s;transform-style:preserve-3d;perspective:1000px;} 
 .card:hover {transform:translateY(-6px) scale(1.01);box-shadow:0 16px 40px -10px rgba(0,0,0,0.35);border-color:var(--accent-title);} 
 .card header {display:flex;flex-direction:column;gap:0.15rem;margin-bottom:0.5rem;}
 .card h3 {margin:0;font-size:1.05rem;font-weight:600;color:var(--accent-text);} 

@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
 import ParticlesBackground from './ParticlesBackground';
+import { Card3D } from './Card3D';
 
 const accent = {
   title: '#2A5CAA',
@@ -54,7 +55,7 @@ export const Portfolio: React.FC = () => {
       <main>
         <Section id="experience" title="Experience">
           {experiences.map(exp => (
-            <div key={exp.company + exp.start} className="card">
+            <Card3D key={exp.company + exp.start} className="card">
               <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
                     {exp.logo && (
@@ -66,12 +67,12 @@ export const Portfolio: React.FC = () => {
               <ul>
                 {exp.bullets.map(b => <li key={b}>{b}</li>)}
               </ul>
-            </div>
+            </Card3D>
           ))}
         </Section>
         <Section id="internships" title="Internships">
           {internships.map(exp => (
-            <div key={exp.company + exp.start} className="card">
+            <Card3D key={exp.company + exp.start} className="card">
               <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
                     {exp.logo && (
@@ -83,12 +84,12 @@ export const Portfolio: React.FC = () => {
               <ul>
                 {exp.bullets.map(b => <li key={b}>{b}</li>)}
               </ul>
-            </div>
+            </Card3D>
           ))}
         </Section>
         <Section id="education" title="Education">
             {education.map(ed => (
-              <div key={ed.institution} className="card education-card">
+              <Card3D key={ed.institution} className="card education-card">
                 <div className="edu-flex">
                   <div className="edu-info">
                     <header>
@@ -109,7 +110,7 @@ export const Portfolio: React.FC = () => {
                     />
                   )}
                 </div>
-              </div>
+              </Card3D>
             ))}
         </Section>
         <Section id="skills" title="Skills">
