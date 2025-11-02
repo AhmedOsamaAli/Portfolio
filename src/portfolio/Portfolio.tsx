@@ -268,13 +268,31 @@ const Hero: React.FC = () => {
 };
 
 const Nav: React.FC = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const sections = ['experience','internships','education','skills','achievements','projects','contact'];
+  
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <nav>
-      <ul>
-        {sections.map(s => <li key={s}><a href={'#'+s}>{s}</a></li>)}
-      </ul>
-    </nav>
+    <>
+      <button 
+        className="hamburger" 
+        aria-label="Toggle navigation menu"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav className={isOpen ? 'open' : ''}>
+        <ul>
+          {sections.map(s => <li key={s}><a href={'#'+s} onClick={handleLinkClick}>{s}</a></li>)}
+        </ul>
+      </nav>
+    </>
   );
 };
 

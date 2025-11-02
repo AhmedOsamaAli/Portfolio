@@ -28,6 +28,11 @@ body {line-height:1.5;}
 .site-header.hide {transform:translateY(-100%);opacity:0;} 
 .site-header .brand h1 {margin:0;font-size:1.65rem;color:var(--accent-title);font-family:'Cormorant Garamond', serif;}
 .site-header .brand .tag {margin:0;font-size:0.85rem;color:var(--accent-text);}
+/* Hamburger Menu */
+.hamburger {display:none;flex-direction:column;gap:5px;background:transparent;border:none;cursor:pointer;padding:8px;z-index:100;}
+.hamburger span {display:block;width:25px;height:3px;background:var(--accent-title);border-radius:3px;transition:all 0.3s ease;}
+.hamburger:hover span {background:var(--accent-line);}
+
 nav ul {list-style:none;display:flex;gap:1rem;margin:0;padding:0;font-size:0.9rem;}
 nav a {text-decoration:none;color:var(--text);text-transform:capitalize;position:relative;padding:0.25rem 0.4rem;border-radius:4px;}
 nav a:hover {color:var(--accent-title);background:rgba(42,92,170,0.08);} 
@@ -158,9 +163,20 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 
 @media (max-width:760px){
   .site-header {padding:0.75rem 1rem;}
-  nav ul {flex-wrap:wrap;gap:0.5rem;}
   main {padding:1.5rem 1rem 3rem;}
   .card {padding:0.9rem 1rem;}
+  
+  /* Show hamburger on mobile */
+  .hamburger {display:flex;}
+  
+  /* Hide nav by default on mobile */
+  nav {position:fixed;top:65px;right:0;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:1rem;box-shadow:0 8px 24px -8px rgba(0,0,0,0.35);transform:translateX(120%);opacity:0;transition:transform 0.3s ease, opacity 0.3s ease;z-index:90;max-width:200px;}
+  
+  /* Show nav when open */
+  nav.open {transform:translateX(-10px);opacity:1;}
+  
+  nav ul {flex-direction:column;gap:0.5rem;}
+  nav a {display:block;padding:0.5rem 0.75rem;width:100%;}
 }
 
 /* Splash Screen */
@@ -260,7 +276,7 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 /* Education card with large logo */
 .education-card .edu-flex {display:flex;align-items:center;justify-content:space-between;gap:1.25rem;}
 .education-card .edu-info {flex:1;min-width:0;}
-.edu-logo-large {width:110px;height:110px;object-fit:contain;border-radius:14px;background:var(--bg-alt);padding:10px;box-shadow:0 6px 20px -6px rgba(0,0,0,0.35),0 0 0 1px var(--border);}
+.edu-logo-large {width:110px;height:110px;object-fit:contain;border-radius:14px;background:#ffffff;padding:10px;box-shadow:0 6px 20px -6px rgba(0,0,0,0.35),0 0 0 1px var(--border);}
 @media (max-width:760px){
   .edu-logo-large {width:70px;height:70px;padding:6px;}
   .education-card .edu-flex {flex-direction:row;align-items:flex-start;}
