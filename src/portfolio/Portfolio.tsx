@@ -146,8 +146,14 @@ export const Portfolio: React.FC = () => {
         </Section>
         <Section id="contact" title="Contact">
           <div className="contact-links" aria-label="Contact links">
-            <p className="contact-intro">Let’s build something great together. Reach out via any channel below:</p>
+            <p className="contact-intro">Let's build something great together. Reach out via any channel below:</p>
             <ul className="contact-list">
+              <li>
+                <a href="tel:+201223729895" className="contact-link" aria-label="Call Ahmed" title="+20 122 372 9895">
+                  <span className="icon" aria-hidden="true">📱</span>
+                  <span>Phone</span>
+                </a>
+              </li>
               <li>
                 <a href="mailto:ahmedosamadiab@gmail.com" className="contact-link" aria-label="Email Ahmed">
                   <span className="icon" aria-hidden="true">📧</span>
