@@ -85,17 +85,30 @@ export const Portfolio: React.FC = () => {
           ))}
         </Section>
         <Section id="education" title="Education">
-          {education.map(ed => (
-            <div key={ed.institution} className="card">
-              <header>
-                <h3>{ed.degree}</h3>
-                <span className="institution">{ed.institution}</span>
-                <span className="dates">{ed.start} – {ed.end}</span>
-                <span className="location">{ed.location}</span>
-              </header>
-              {ed.notes && <ul>{ed.notes.map(n => <li key={n}>{n}</li>)}</ul>}
-            </div>
-          ))}
+            {education.map(ed => (
+              <div key={ed.institution} className="card education-card">
+                <div className="edu-flex">
+                  <div className="edu-info">
+                    <header>
+                      <h3>{ed.degree}</h3>
+                      <span className="institution">{ed.institution}</span>
+                      <span className="dates">{ed.start} – {ed.end}</span>
+                      <span className="location">{ed.location}</span>
+                    </header>
+                    {ed.notes && <ul>{ed.notes.map(n => <li key={n}>{n}</li>)}</ul>}
+                  </div>
+                  {ed.institution.toLowerCase().includes('german international university') && (
+                    // Use import.meta.env.BASE_URL to ensure the asset path works on GitHub Pages subdirectory deployments
+                    <img
+                      src={`${import.meta.env.BASE_URL}Giusquare_trans.png`}
+                      alt="German International University logo"
+                      className="edu-logo-large"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
         </Section>
         <Section id="skills" title="Skills">
           <div className="skills-grid">
@@ -113,7 +126,15 @@ export const Portfolio: React.FC = () => {
           {achievements.map(a => (
             <div key={a.title} className="card achievement">
               <header>
-                <h3>{a.title}</h3>
+                <h3 className="achievement-title">
+                  {a.icon && (
+                    <span className="achievement-icon" aria-hidden="true">{a.icon}</span>
+                  )}
+                  <span className="achievement-text">{a.title}</span>
+                  {a.icon && (
+                    <span className="sr-only"> icon {a.icon}</span>
+                  )}
+                </h3>
               </header>
               <p>{a.description}</p>
               {a.links && <p className="links">{a.links.map(l => <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>)}</p>}
@@ -121,16 +142,7 @@ export const Portfolio: React.FC = () => {
           ))}
         </Section>
         <Section id="projects" title="Projects">
-          {projects.map(p => (
-            <div key={p.name} className="card project">
-              <header>
-                <h3><a href={p.url} target="_blank" rel="noreferrer">{p.name}</a></h3>
-                <span className="dates">{p.start} – {p.end}</span>
-              </header>
-              <ul>{p.bullets.map(b => <li key={b}>{b}</li>)}</ul>
-              <div className="pill-group">{p.stack.map(s => <span key={s} className="pill stack">{s}</span>)}</div>
-            </div>
-          ))}
+              <ProjectTimeline />
         </Section>
         <Section id="contact" title="Contact">
           <div className="contact-links" aria-label="Contact links">
@@ -163,6 +175,38 @@ export const Portfolio: React.FC = () => {
   );
 };
 
+// Vertical timeline for projects
+const ProjectTimeline: React.FC = () => {
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return (
+    <div className="timeline" aria-label="Projects timeline">
+      <div className="timeline-line" aria-hidden="true" />
+      {projects.map((p, idx) => (
+        <motion.article
+          key={p.name}
+          className="timeline-item"
+          initial={prefersReduced ? false : { opacity: 0, y: 32 }}
+          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.55, ease: 'easeOut', delay: prefersReduced ? 0 : idx * 0.05 }}
+        >
+          <div className="timeline-point" aria-hidden="true"><span className="tp-inner" /></div>
+          <div className="timeline-date" aria-label={`Project dates ${p.start} to ${p.end}`}>{p.start} – {p.end}</div>
+          <div className="timeline-content card">
+            <header>
+              <h3 className="project-title"><a href={p.url || '#'} target={p.url? '_blank':'_self'} rel="noreferrer">{p.name}</a></h3>
+              <span className="sr-only" aria-label={`Dates: ${p.start} to ${p.end}`}>{p.start} – {p.end}</span>
+            </header>
+            <ul className="project-bullets">{p.bullets.map(b => <li key={b}>{b}</li>)}</ul>
+            <div className="stack-tags" aria-label="Technology stack">
+              {p.stack.map(s => <span key={s} className="pill stack tag" data-tech={s.toLowerCase()}>{s}</span>)}
+            </div>
+          </div>
+        </motion.article>
+      ))}
+    </div>
+  );
+};
 const Header: React.FC = () => {
   const [transparent, setTransparent] = React.useState(true);
   const [hide, setHide] = React.useState(false);
