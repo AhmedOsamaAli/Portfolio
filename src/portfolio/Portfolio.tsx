@@ -1,5 +1,5 @@
 import React from 'react';
-import { experiences, internships, education, skills, achievements, projects } from './data';
+import { experiences, education, skills, achievements, projects } from './data';
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
@@ -9,6 +9,8 @@ import CursorTrail from './CursorTrail';
 import { RippleEffect } from './RippleEffect';
 import { ParallaxSections } from './ParallaxSections';
 import { TextReveal } from './TextReveal';
+import { QuickActionMenu } from './QuickActionMenu';
+import { getProjectTheme, getTechIcon } from './projectThemes';
 
 const accent = {
   title: '#2A5CAA',
@@ -67,29 +69,12 @@ export const Portfolio: React.FC = () => {
       <ParticlesBackground />
       <FloatingIcons />
       <SectionRail />
-      <XPBadge />
+      <QuickActionMenu />
       <Header />
       <Hero />
       <main>
         <Section id="experience" title="Experience">
           {experiences.map(exp => (
-            <Card3D key={exp.company + exp.start} className="card">
-              <header>
-                    <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
-                    {exp.logo && (
-                      exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
-                    )}
-                <span className="dates">{exp.start} – {exp.end}</span>
-                <span className="location">{exp.location}</span>
-              </header>
-              <ul>
-                {exp.bullets.map(b => <li key={b}>{b}</li>)}
-              </ul>
-            </Card3D>
-          ))}
-        </Section>
-        <Section id="internships" title="Internships">
-          {internships.map(exp => (
             <Card3D key={exp.company + exp.start} className="card">
               <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
@@ -133,13 +118,41 @@ export const Portfolio: React.FC = () => {
         </Section>
         <Section id="skills" title="Skills">
           <div className="skills-grid">
-            <div>
+            <div className="skill-category">
               <h3>Programming</h3>
-              <div className="pill-group">{skills.programming.map(s => <span key={s} className="pill">{s}</span>)}</div>
+              <div className="pill-group">
+                {skills.programming.map((s, idx) => (
+                  <motion.span
+                    key={s}
+                    className="pill skill-pill"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: idx * 0.05 }}
+                    whileHover={{ scale: 1.08, y: -3 }}
+                  >
+                    {s}
+                  </motion.span>
+                ))}
+              </div>
             </div>
-            <div>
+            <div className="skill-category">
               <h3>Miscellaneous</h3>
-              <div className="pill-group">{skills.miscellaneous.map(s => <span key={s} className="pill">{s}</span>)}</div>
+              <div className="pill-group">
+                {skills.miscellaneous.map((s, idx) => (
+                  <motion.span
+                    key={s}
+                    className="pill skill-pill"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: idx * 0.05 }}
+                    whileHover={{ scale: 1.08, y: -3 }}
+                  >
+                    {s}
+                  </motion.span>
+                ))}
+              </div>
             </div>
           </div>
         </Section>
@@ -208,29 +221,46 @@ const ProjectTimeline: React.FC = () => {
   return (
     <div className="timeline" aria-label="Projects timeline">
       <div className="timeline-line" aria-hidden="true" />
-      {projects.map((p, idx) => (
-        <motion.article
-          key={p.name}
-          className="timeline-item"
-          initial={prefersReduced ? false : { opacity: 0, y: 32 }}
-          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: 'easeOut', delay: prefersReduced ? 0 : idx * 0.05 }}
-        >
-          <div className="timeline-point" aria-hidden="true"><span className="tp-inner" /></div>
-          <div className="timeline-date" aria-label={`Project dates ${p.start} to ${p.end}`}>{p.start} – {p.end}</div>
-          <div className="timeline-content card">
-            <header>
-              <h3 className="project-title"><a href={p.url || '#'} target={p.url? '_blank':'_self'} rel="noreferrer">{p.name}</a></h3>
-              <span className="sr-only" aria-label={`Dates: ${p.start} to ${p.end}`}>{p.start} – {p.end}</span>
-            </header>
-            <ul className="project-bullets">{p.bullets.map(b => <li key={b}>{b}</li>)}</ul>
-            <div className="stack-tags" aria-label="Technology stack">
-              {p.stack.map(s => <span key={s} className="pill stack tag" data-tech={s.toLowerCase()}>{s}</span>)}
+      {projects.map((p, idx) => {
+        const theme = getProjectTheme(p);
+        return (
+          <motion.article
+            key={p.name}
+            className="timeline-item"
+            initial={prefersReduced ? false : { opacity: 0, y: 32 }}
+            whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.55, ease: 'easeOut', delay: prefersReduced ? 0 : idx * 0.05 }}
+          >
+            <div className="timeline-point" aria-hidden="true">
+              <span className="tp-inner" style={{ background: theme.gradient }} />
             </div>
-          </div>
-        </motion.article>
-      ))}
+            <div className="timeline-date" aria-label={`Project dates ${p.start} to ${p.end}`}>{p.start} – {p.end}</div>
+            <div className="timeline-content card project-card" data-animation={theme.animation}>
+              <div className="project-icon" style={{ background: theme.gradient }}>
+                {theme.icon}
+              </div>
+              <header>
+                <h3 className="project-title">
+                  <a href={p.url || '#'} target={p.url? '_blank':'_self'} rel="noreferrer" style={{ color: theme.color }}>
+                    {p.name}
+                  </a>
+                </h3>
+                <span className="sr-only" aria-label={`Dates: ${p.start} to ${p.end}`}>{p.start} – {p.end}</span>
+              </header>
+              <ul className="project-bullets">{p.bullets.map(b => <li key={b}>{b}</li>)}</ul>
+              <div className="stack-tags" aria-label="Technology stack">
+                {p.stack.map(s => (
+                  <span key={s} className="pill stack-pill" style={{ borderColor: theme.color }}>
+                    <span className="tech-icon">{getTechIcon(s)}</span>
+                    <span className="tech-name">{s}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.article>
+        );
+      })}
     </div>
   );
 };
@@ -300,7 +330,7 @@ const Hero: React.FC = () => {
 
 const Nav: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const sections = ['experience','internships','education','skills','achievements','projects','contact'];
+  const sections = ['experience','education','skills','achievements','projects','contact'];
   
   const handleLinkClick = () => {
     setIsOpen(false);
@@ -365,7 +395,6 @@ const Footer: React.FC = () => (
 // Right side section navigation rail
 const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
   { id: 'experience', label: 'Experience', icon: '💼' },
-  { id: 'internships', label: 'Internships', icon: '🛠️' },
   { id: 'education', label: 'Education', icon: '🎓' },
   { id: 'skills', label: 'Skills', icon: '🧠' },
   { id: 'achievements', label: 'Achievements', icon: '🏅' },
@@ -611,10 +640,9 @@ const XPBadge: React.FC = () => {
   const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
   if (isMobile) return null;
   const levels = [
-    { name: 'Intern', threshold: 0 },
-    { name: 'Engineer', threshold: 0.15 },
-    { name: 'Refactorer', threshold: 0.35 },
-    { name: 'Optimizer', threshold: 0.55 },
+    { name: 'Explorer', threshold: 0 },
+    { name: 'Refactorer', threshold: 0.25 },
+    { name: 'Optimizer', threshold: 0.50 },
     { name: 'Architect', threshold: 0.75 },
     { name: 'Legend', threshold: 0.92 }
   ];
