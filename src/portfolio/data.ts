@@ -126,56 +126,17 @@ export const achievements: AchievementItem[] = [
 
 export const projects: ProjectItem[] = [
   {
-    name: 'Marvel-Wargame',
-    url: 'https://github.com/AhmedOsamaAli/Marvel-War-Game',
-    start: 'Mar 2022',
-    end: 'Jun 2022',
+    name: 'Portfolio Website',
+    url: 'https://github.com/AhmedOsamaAli/Portfolio',
+    start: 'Nov 2025',
+    end: 'Present',
     bullets: [
-      'Developed a two-player board game featuring team selection of 3 distinct Marvel characters.',
-      'Implemented unique character abilities and turn-based combat mechanics.',
-      'Applied Object-Oriented Programming (OOP) principles for characters, abilities, and game state.',
-      'Built an interactive GUI with Java Swing enabling engaging player experience.'
+      'Built a modern, responsive portfolio website using React and TypeScript.',
+      'Implemented a clean, professional design showcasing projects, experience, and achievements.',
+      'Utilized Vite for fast development and optimized production builds.',
+      'Integrated comprehensive testing with Vitest to ensure code quality.'
     ],
-    stack: ['Java', 'OOP', 'Swing', 'Game Logic']
-  },
-  {
-    name: 'GIU Bachelor Portal',
-    url: 'https://github.com/AhmedOsamaAli/GIU-bachelor-Portal',
-    start: 'Oct 2022',
-    end: 'Jan 2023',
-    bullets: [
-      'Constructed a portal for GIU students to browse available bachelor project opportunities.',
-      'Facilitated communication between professors and students via integrated messaging features.',
-      'Implemented server-side logic with ASP.NET and SQL for data persistence.',
-      'Designed a clean, accessible HTML/CSS interface for project discovery & interaction.'
-    ],
-    stack: ['ASP.NET', 'SQL', 'HTML', 'CSS']
-  },
-  {
-    name: 'Cairo Metro System',
-    url: 'https://github.com/AhmedOsamaAli/Cairo-Metro-System',
-    start: 'Mar 2023',
-    end: 'Jun 2023',
-    bullets: [
-      'Web app for reserving & paying for metro tickets.',
-      'Upcoming travel views and ticket management.',
-      'Admin panel for stations, routes, modifications.',
-      'PostgreSQL for efficient data storage & retrieval.'
-    ],
-    stack: ['PostgreSQL', 'Express.js', 'React.js', 'Node.js']
-  },
-  {
-    name: 'Staff Help Desk Application',
-    url: 'https://github.com/AhmedOsamaAli/Staff-Help-Desk',
-    start: 'Jul 2023',
-    end: 'Sep 2023',
-    bullets: [
-      'Streamlined support and ticketing processes for agents and users.',
-      'Real-time notifications & chat using Socket.IO.',
-      'Knowledge base feature for self-service issue resolution.',
-      'MERN stack for scalability and responsiveness.'
-    ],
-    stack: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'Socket.IO']
+    stack: ['React', 'TypeScript', 'Vite', 'CSS', 'Vitest']
   },
   {
     name: 'E-commerce Platform',
@@ -193,16 +154,55 @@ export const projects: ProjectItem[] = [
     stack: ['Next.js', 'Nest.js', 'Kafka', 'Docker', 'Microservices', 'TypeScript']
   },
   {
-    name: 'Portfolio Website',
-    url: 'https://github.com/AhmedOsamaAli/Portfolio',
-    start: 'Nov 2025',
-    end: 'Present',
+    name: 'Staff Help Desk Application',
+    url: 'https://github.com/AhmedOsamaAli/Staff-Help-Desk',
+    start: 'Jul 2023',
+    end: 'Sep 2023',
     bullets: [
-      'Built a modern, responsive portfolio website using React and TypeScript.',
-      'Implemented a clean, professional design showcasing projects, experience, and achievements.',
-      'Utilized Vite for fast development and optimized production builds.',
-      'Integrated comprehensive testing with Vitest to ensure code quality.'
+      'Streamlined support and ticketing processes for agents and users.',
+      'Real-time notifications & chat using Socket.IO.',
+      'Knowledge base feature for self-service issue resolution.',
+      'MERN stack for scalability and responsiveness.'
     ],
-    stack: ['React', 'TypeScript', 'Vite', 'CSS', 'Vitest']
+    stack: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'Socket.IO']
+  },
+  {
+    name: 'Cairo Metro System',
+    url: 'https://github.com/AhmedOsamaAli/Cairo-Metro-System',
+    start: 'Mar 2023',
+    end: 'Jun 2023',
+    bullets: [
+      'Web app for reserving & paying for metro tickets.',
+      'Upcoming travel views and ticket management.',
+      'Admin panel for stations, routes, modifications.',
+      'PostgreSQL for efficient data storage & retrieval.'
+    ],
+    stack: ['PostgreSQL', 'Express.js', 'React.js', 'Node.js']
+  },
+  {
+    name: 'GIU Bachelor Portal',
+    url: 'https://github.com/AhmedOsamaAli/GIU-bachelor-Portal',
+    start: 'Oct 2022',
+    end: 'Jan 2023',
+    bullets: [
+      'Constructed a portal for GIU students to browse available bachelor project opportunities.',
+      'Facilitated communication between professors and students via integrated messaging features.',
+      'Implemented server-side logic with ASP.NET and SQL for data persistence.',
+      'Designed a clean, accessible HTML/CSS interface for project discovery & interaction.'
+    ],
+    stack: ['ASP.NET', 'SQL', 'HTML', 'CSS']
+  },
+  {
+    name: 'Marvel-Wargame',
+    url: 'https://github.com/AhmedOsamaAli/Marvel-War-Game',
+    start: 'Mar 2022',
+    end: 'Jun 2022',
+    bullets: [
+      'Developed a two-player board game featuring team selection of 3 distinct Marvel characters.',
+      'Implemented unique character abilities and turn-based combat mechanics.',
+      'Applied Object-Oriented Programming (OOP) principles for characters, abilities, and game state.',
+      'Built an interactive GUI with Java Swing enabling engaging player experience.'
+    ],
+    stack: ['Java', 'OOP', 'Swing', 'Game Logic']
   }
 ];
