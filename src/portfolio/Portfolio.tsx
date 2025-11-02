@@ -1,11 +1,14 @@
 import React from 'react';
 import { experiences, internships, education, skills, achievements, projects } from './data';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
 import ParticlesBackground from './ParticlesBackground';
 import { Card3D } from './Card3D';
 import CursorTrail from './CursorTrail';
+import { RippleEffect } from './RippleEffect';
+import { ParallaxSections } from './ParallaxSections';
+import { TextReveal } from './TextReveal';
 
 const accent = {
   title: '#2A5CAA',
@@ -38,16 +41,29 @@ export const Portfolio: React.FC = () => {
     if (typeof window === 'undefined') return false;
     return true;
   });
+  
+  // Force scroll to top on mount/refresh
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    // Prevent browser from restoring scroll position
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+  
   React.useEffect(() => {
     if (!showSplash) return;
-    // Safety timeout: force hide at 3.1s now
-    const t = setTimeout(() => setShowSplash(false), 3100);
+    // Optimal timing: 3.5s total (1s typing + 2s read time + 0.5s fade)
+    const t = setTimeout(() => setShowSplash(false), 3500);
     return () => clearTimeout(t);
   }, [showSplash]);
   return (
     <div className="app">
       {showSplash && <SplashScreen />}
+      <ScrollProgress />
       <CursorTrail />
+      <RippleEffect />
+      <ParallaxSections />
       <ParticlesBackground />
       <FloatingIcons />
       <SectionRail />
@@ -247,6 +263,17 @@ const Header: React.FC = () => {
   );
 };
 
+const ScrollProgress: React.FC = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return <motion.div className="scroll-progress" style={{ scaleX }} />;
+};
+
 const Hero: React.FC = () => {
   const prefersReduced = useReducedMotion();
   return (
@@ -259,7 +286,7 @@ const Hero: React.FC = () => {
     >
       <div className="hero-inner">
   <Img asset="headshot" />
-  <h2 className="hero-title">Software Engineer crafting resilient & performant products.</h2>
+  <TextReveal text="Software Engineer crafting resilient & performant products." className="hero-title" />
   <p className="hero-sub">Focused on clean architecture, automation, performance optimization and developer experience. I build reliable pipelines and user-centric full-stack applications.</p>
         <RotatingTagline />
         <div className="hero-cta">
@@ -430,36 +457,59 @@ const SplashScreen: React.FC = () => {
   const fullSubLight = 'Software Engineer @ Microsoft';
   const fullSubDark = 'Software Engineer @ Microsoft — building in the dark 🌙';
   const fullSub = darkTheme ? fullSubDark : fullSubLight;
+  const tagline = '✨ Crafting resilient & performant products';
   const [titleChars, setTitleChars] = React.useState(0);
   const [subChars, setSubChars] = React.useState(0);
+  const [taglineChars, setTaglineChars] = React.useState(0);
+  const [showContent, setShowContent] = React.useState(false);
+  
+  React.useEffect(() => {
+    // Initial entry animation
+    setTimeout(() => setShowContent(true), 100);
+  }, []);
+  
   React.useEffect(() => {
     if (prefersReduced) {
       setTitleChars(fullTitle.length);
       setSubChars(fullSub.length);
+      setTaglineChars(tagline.length);
       return;
     }
     const start = performance.now();
-    const titleDuration = 800;
-    const subDuration = 700;
-    const typingTotal = titleDuration + subDuration;
-    const totalVisible = 3000;
+    const titleDuration = 600;
+    const subDuration = 500;
+    const taglineDuration = 600;
+    const typingTotal = titleDuration + subDuration + taglineDuration;
+    const totalVisible = 3500;
     const tick = (now: number) => {
       const elapsed = now - start;
       if (elapsed < titleDuration) {
         const ratio = elapsed / titleDuration;
         setTitleChars(Math.min(fullTitle.length, Math.floor(ratio * fullTitle.length)));
-      } else {
+      } else if (elapsed < titleDuration + subDuration) {
         setTitleChars(fullTitle.length);
         const subElapsed = elapsed - titleDuration;
         const subRatio = subElapsed / subDuration;
         setSubChars(Math.min(fullSub.length, Math.floor(subRatio * fullSub.length)));
+      } else if (elapsed < typingTotal) {
+        setTitleChars(fullTitle.length);
+        setSubChars(fullSub.length);
+        const taglineElapsed = elapsed - titleDuration - subDuration;
+        const taglineRatio = taglineElapsed / taglineDuration;
+        setTaglineChars(Math.min(tagline.length, Math.floor(taglineRatio * tagline.length)));
+      } else {
+        setTitleChars(fullTitle.length);
+        setSubChars(fullSub.length);
+        setTaglineChars(tagline.length);
       }
+      
       if (elapsed < typingTotal) {
         requestAnimationFrame(tick);
       } else {
         setTitleChars(fullTitle.length);
         setSubChars(fullSub.length);
-        const fadeStart = totalVisible - 600;
+        setTaglineChars(tagline.length);
+        const fadeStart = totalVisible - 500;
         setTimeout(() => {
           const root = document.querySelector('.splash');
           if (root) root.classList.add('splash-hide');
@@ -468,10 +518,26 @@ const SplashScreen: React.FC = () => {
     };
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [prefersReduced, fullSub]);
+  }, [prefersReduced, fullSub, tagline]);
+  
   return (
-    <div className={`splash ${darkTheme ? 'dark-splash' : ''}`} role="status" aria-label="Intro splash">
+    <div className={`splash ${darkTheme ? 'dark-splash' : ''} ${showContent ? 'splash-visible' : ''}`} role="status" aria-label="Intro splash">
+      <div className="splash-bg-orb splash-orb-1"></div>
+      <div className="splash-bg-orb splash-orb-2"></div>
+      <div className="splash-bg-orb splash-orb-3"></div>
       <div className="splash-inner">
+        <div className="splash-logo">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="28" stroke="url(#gradient)" strokeWidth="2" className="splash-logo-circle"/>
+            <text x="30" y="40" textAnchor="middle" fill="url(#gradient)" fontSize="28" fontWeight="bold" className="splash-logo-text">AO</text>
+            <defs>
+              <linearGradient id="gradient" x1="0" y1="0" x2="60" y2="60">
+                <stop offset="0%" stopColor="#2A5CAA"/>
+                <stop offset="100%" stopColor="#5B8FCC"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <h1 className="splash-title">
           {fullTitle.slice(0, titleChars)}
           {!prefersReduced && titleChars < fullTitle.length && <span className="caret" aria-hidden="true">|</span>}
@@ -480,9 +546,13 @@ const SplashScreen: React.FC = () => {
           {fullSub.slice(0, subChars)}
           {!prefersReduced && subChars < fullSub.length && <span className="caret" aria-hidden="true">|</span>}
         </p>
-        {darkTheme && (
-          <p className="splash-sub-alt" aria-hidden="true">Optimizing pipelines & performance in night mode.</p>
-        )}
+        <p className="splash-tagline">
+          {tagline.slice(0, taglineChars)}
+          {!prefersReduced && taglineChars < tagline.length && <span className="caret" aria-hidden="true">|</span>}
+        </p>
+        <div className="splash-loader">
+          <div className="splash-loader-bar"></div>
+        </div>
       </div>
     </div>
   );
