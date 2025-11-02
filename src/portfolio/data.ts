@@ -191,5 +191,18 @@ export const projects: ProjectItem[] = [
       'Containerized all services with Docker to streamline local development & deployment.'
     ],
     stack: ['Next.js', 'Nest.js', 'Kafka', 'Docker', 'Microservices', 'TypeScript']
+  },
+  {
+    name: 'Portfolio Website',
+    url: 'https://github.com/AhmedOsamaAli/Portfolio',
+    start: 'Nov 2025',
+    end: 'Present',
+    bullets: [
+      'Built a modern, responsive portfolio website using React and TypeScript.',
+      'Implemented a clean, professional design showcasing projects, experience, and achievements.',
+      'Utilized Vite for fast development and optimized production builds.',
+      'Integrated comprehensive testing with Vitest to ensure code quality.'
+    ],
+    stack: ['React', 'TypeScript', 'Vite', 'CSS', 'Vitest']
   }
 ];
