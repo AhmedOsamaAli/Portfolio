@@ -389,11 +389,19 @@ const FloatingIcons: React.FC = () => {
 
 export default Portfolio;
 
-// Simple timed splash screen
+// Timed splash screen with dark theme variant
 const SplashScreen: React.FC = () => {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [darkTheme, setDarkTheme] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const current = document.documentElement.dataset.theme || localStorage.getItem('theme') || 'light';
+    setDarkTheme(current === 'dark');
+  }, []);
   const fullTitle = 'Ahmed Osama';
-  const fullSub = 'Software Engineer @ Microsoft';
+  const fullSubLight = 'Software Engineer @ Microsoft';
+  const fullSubDark = 'Software Engineer @ Microsoft — building in the dark 🌙';
+  const fullSub = darkTheme ? fullSubDark : fullSubLight;
   const [titleChars, setTitleChars] = React.useState(0);
   const [subChars, setSubChars] = React.useState(0);
   React.useEffect(() => {
@@ -403,10 +411,10 @@ const SplashScreen: React.FC = () => {
       return;
     }
     const start = performance.now();
-  const titleDuration = 800; // ms typing name
-  const subDuration = 700;  // ms typing role
-  const typingTotal = titleDuration + subDuration; // 1500ms
-  const totalVisible = 3000; // want splash up ~3s total
+    const titleDuration = 800;
+    const subDuration = 700;
+    const typingTotal = titleDuration + subDuration;
+    const totalVisible = 3000;
     const tick = (now: number) => {
       const elapsed = now - start;
       if (elapsed < titleDuration) {
@@ -423,8 +431,7 @@ const SplashScreen: React.FC = () => {
       } else {
         setTitleChars(fullTitle.length);
         setSubChars(fullSub.length);
-        // Schedule fade out so it starts ~600ms before removal (fade duration .6s)
-  const fadeStart = totalVisible - 600; // 2400ms
+        const fadeStart = totalVisible - 600;
         setTimeout(() => {
           const root = document.querySelector('.splash');
           if (root) root.classList.add('splash-hide');
@@ -433,9 +440,9 @@ const SplashScreen: React.FC = () => {
     };
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [prefersReduced]);
+  }, [prefersReduced, fullSub]);
   return (
-    <div className="splash" role="status" aria-label="Intro splash">
+    <div className={`splash ${darkTheme ? 'dark-splash' : ''}`} role="status" aria-label="Intro splash">
       <div className="splash-inner">
         <h1 className="splash-title">
           {fullTitle.slice(0, titleChars)}
@@ -445,6 +452,9 @@ const SplashScreen: React.FC = () => {
           {fullSub.slice(0, subChars)}
           {!prefersReduced && subChars < fullSub.length && <span className="caret" aria-hidden="true">|</span>}
         </p>
+        {darkTheme && (
+          <p className="splash-sub-alt" aria-hidden="true">Optimizing pipelines & performance in night mode.</p>
+        )}
       </div>
     </div>
   );
