@@ -5,6 +5,7 @@ import './portfolio.css';
 import { Img } from './assets';
 import ParticlesBackground from './ParticlesBackground';
 import { Card3D } from './Card3D';
+import CursorTrail from './CursorTrail';
 
 const accent = {
   title: '#2A5CAA',
@@ -46,6 +47,7 @@ export const Portfolio: React.FC = () => {
   return (
     <div className="app">
       {showSplash && <SplashScreen />}
+      <CursorTrail />
       <ParticlesBackground />
       <FloatingIcons />
       <SectionRail />
@@ -265,7 +267,6 @@ const Hero: React.FC = () => {
           <a href="mailto:ahmedosamadiab@gmail.com" className="btn secondary">Get in Touch</a>
         </div>
       </div>
-      <div className="hero-bg" aria-hidden="true" />
     </motion.section>
   );
 };
