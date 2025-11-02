@@ -3,6 +3,7 @@ import { experiences, internships, education, skills, achievements, projects } f
 import { motion, useReducedMotion } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
+import ParticlesBackground from './ParticlesBackground';
 
 const accent = {
   title: '#2A5CAA',
@@ -44,6 +45,7 @@ export const Portfolio: React.FC = () => {
   return (
     <div className="app">
       {showSplash && <SplashScreen />}
+      <ParticlesBackground />
       <FloatingIcons />
       <SectionRail />
       <XPBadge />

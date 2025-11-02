@@ -7,13 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-  "test": "vitest run",
-  "ci": "vitest run && vite build"
+    "test": "vitest run",
+    "ci": "vitest run && vite build"
   },
   "dependencies": {
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "framer-motion": "^12.23.24",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tsparticles": "^3.9.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.39",
