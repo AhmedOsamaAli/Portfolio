@@ -18,7 +18,17 @@
   --glass:rgba(22,32,42,0.55);
   --gradient:linear-gradient(135deg,var(--accent-line),var(--accent-title));
 }
-html,body {margin:0;padding:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;} 
+html,body {
+  margin:0;
+  padding:0;
+  font-family:Inter,system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  /* Performance optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} 
 body {line-height:1.5;}
 #root {min-height:100vh;display:flex;flex-direction:column;}
 
@@ -42,7 +52,21 @@ nav a:hover {color:var(--accent-title);background:rgba(42,92,170,0.08);}
 main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 .section {margin-bottom:3.5rem;scroll-margin-top:90px;} /* ensures anchor links account for sticky header height */
 .section h2 {margin:0 0 1.25rem;font-size:1.3rem;letter-spacing:0.5px;color:var(--accent-title);border-bottom:2px solid var(--accent-line);display:inline-block;padding-bottom:4px;font-weight:600;}
-.card {background:var(--glass);backdrop-filter:blur(14px);padding:1.1rem 1.25rem;border:1px solid var(--border);border-radius:18px;margin-bottom:1.25rem;box-shadow:0 8px 24px -8px rgba(0,0,0,0.25);transition:transform .35s cubic-bezier(.17,.67,.27,1), box-shadow .35s, border-color .35s;transform-style:preserve-3d;perspective:1000px;} 
+.card {
+  background:var(--glass);
+  backdrop-filter:blur(14px);
+  padding:1.1rem 1.25rem;
+  border:1px solid var(--border);
+  border-radius:18px;
+  margin-bottom:1.25rem;
+  box-shadow:0 8px 24px -8px rgba(0,0,0,0.25);
+  transition:transform .35s cubic-bezier(.17,.67,.27,1), box-shadow .35s, border-color .35s;
+  transform-style:preserve-3d;
+  perspective:1000px;
+  /* Performance optimizations */
+  will-change: transform;
+  contain: layout style paint;
+} 
 .card:hover {transform:translateY(-6px) scale(1.01);box-shadow:0 16px 40px -10px rgba(0,0,0,0.35);border-color:var(--accent-title);} 
 .card header {display:flex;flex-direction:column;gap:0.15rem;margin-bottom:0.5rem;}
 .card h3 {margin:0;font-size:1.05rem;font-weight:600;color:var(--accent-text);} 
@@ -348,11 +372,12 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #0a1929 0%, #1a3a52 50%, #2a5a7a 100%);
-  z-index: 120;
-  pointer-events: none;
-  opacity: 0;
+  z-index: 9999;
+  pointer-events: all;
+  opacity: 1;
   transition: opacity 0.5s ease;
   overflow: hidden;
+  will-change: opacity;
 }
 
 .splash-visible {
@@ -726,10 +751,14 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   z-index: 1;
   opacity: 0.9;
   transition: all 0.3s ease;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .project-card:hover .project-icon {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.1) rotate(5deg) translateZ(0);
   opacity: 1;
 }
 
@@ -759,28 +788,28 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 }
 
 @keyframes projectFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-8px) translateZ(0); }
 }
 
 @keyframes projectPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: scale(1) translateZ(0); }
+  50% { transform: scale(1.05) translateZ(0); }
 }
 
 @keyframes projectSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg) translateZ(0); }
+  to { transform: rotate(360deg) translateZ(0); }
 }
 
 @keyframes projectBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-6px) translateZ(0); }
 }
 
 @keyframes projectSlide {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(4px); }
+  0%, 100% { transform: translateX(0) translateZ(0); }
+  50% { transform: translateX(4px) translateZ(0); }
 }
 
 @keyframes projectGlow {

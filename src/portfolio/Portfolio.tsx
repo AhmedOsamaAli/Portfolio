@@ -62,6 +62,8 @@ export const Portfolio: React.FC = () => {
   return (
     <div className="app">
       {showSplash && <SplashScreen />}
+      {/* Hide main content until splash is done */}
+      <div style={{ visibility: showSplash ? 'hidden' : 'visible' }}>
       <ScrollProgress />
       <CursorTrail />
       <RippleEffect />
@@ -228,6 +230,7 @@ export const Portfolio: React.FC = () => {
         </Section>
       </main>
       <Footer />
+      </div>
     </div>
   );
 };
