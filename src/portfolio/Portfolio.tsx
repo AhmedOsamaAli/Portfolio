@@ -20,30 +20,112 @@ const accent = {
   line: '#1A4B99'
 };
 
+// Hook: mobile detection (matches small viewport width)
+function useIsMobile(breakpoint = 760) {
+  const [mobile, setMobile] = React.useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
+  });
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const listener = () => setMobile(mq.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, [breakpoint]);
+  return mobile;
+}
+
 const Section: React.FC<{ id: string; title: string; children: React.ReactNode }> = ({ id, title, children }) => {
   const prefersReduced = useReducedMotion();
+  const isMobile = useIsMobile();
+  // On mobile: render fully visible immediately (no scroll-trigger lazy reveal)
+  const sectionProps = isMobile ? {} : {
+    initial: prefersReduced ? undefined : { opacity: 0, y: 30 },
+    whileInView: prefersReduced ? undefined : { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as any }
+  };
+  const titleProps = isMobile ? {} : {
+    initial: prefersReduced ? undefined : { opacity: 0, x: -30 },
+    whileInView: prefersReduced ? undefined : { opacity: 1, x: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as any }
+  };
   return (
-    <motion.section
-      id={id}
-      className="section"
-      initial={prefersReduced ? false : { opacity: 0, y: 30 }}
-      whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <motion.h2 
-        className="section-title-enhanced"
-        initial={prefersReduced ? false : { opacity: 0, x: -30 }}
-        whileInView={prefersReduced ? {} : { opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-      >
+    <motion.section id={id} className="section" {...sectionProps}>
+      <motion.h2 className="section-title-enhanced" {...titleProps}>
         <span className="section-title-icon">{'// '}</span>
         <span className="section-title-text">{title}</span>
         <span className="section-title-line"></span>
       </motion.h2>
       {children}
     </motion.section>
+  );
+};
+
+// Right side navigation rail (desktop/tablet only, still works on mobile if desired)
+const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
+  { id: 'experience', label: 'Experience', icon: '💼' },
+  { id: 'internships', label: 'Internships', icon: '🛠️' },
+  { id: 'education', label: 'Education', icon: '🎓' },
+  { id: 'skills', label: 'Skills', icon: '🧠' },
+  { id: 'achievements', label: 'Achievements', icon: '🏅' },
+  { id: 'projects', label: 'Projects', icon: '🗂️' },
+  { id: 'contact', label: 'Contact', icon: '✉️' }
+];
+const SectionRail: React.FC = () => {
+  const [active, setActive] = React.useState<string>('experience');
+  React.useEffect(() => {
+    let currentSection = 'experience';
+    const updateActiveSection = () => {
+      const viewportCenter = window.scrollY + window.innerHeight / 3;
+      const isAtBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
+      if (isAtBottom) {
+        currentSection = 'contact';
+        setActive('contact');
+        return;
+      }
+      for (const meta of sectionMeta) {
+        const el = document.getElementById(meta.id);
+        if (!el) continue;
+        const top = el.offsetTop;
+        const bottom = top + el.offsetHeight;
+        if (viewportCenter >= top && viewportCenter < bottom) {
+          if (currentSection !== meta.id) {
+            currentSection = meta.id;
+            setActive(meta.id);
+          }
+          break;
+        }
+      }
+    };
+    let rafId: number;
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updateActiveSection);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateActiveSection();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+  return (
+    <nav className="section-rail" aria-label="Section navigation">
+      <ul>
+        {sectionMeta.map(m => (
+          <li key={m.id}>
+            <a href={`#${m.id}`} className={m.id === active ? 'active' : ''} aria-current={m.id === active ? 'true' : undefined}>
+              <span className="icon" aria-hidden="true">{m.icon}</span>
+              <span className="sr-only">{m.label}</span>
+              <span className="tooltip" role="tooltip">{m.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 
@@ -309,6 +391,7 @@ export const Portfolio: React.FC = () => {
 // Vertical timeline for projects
 const ProjectTimeline: React.FC = () => {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = useIsMobile();
   return (
     <div className="timeline" aria-label="Projects timeline">
       <div className="timeline-line" aria-hidden="true" />
@@ -318,10 +401,12 @@ const ProjectTimeline: React.FC = () => {
           <motion.article
             key={p.name}
             className="timeline-item"
-            initial={prefersReduced ? false : { opacity: 0, y: 32 }}
-            whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.55, ease: 'easeOut', delay: prefersReduced ? 0 : idx * 0.05 }}
+            {...(isMobile ? {} : {
+              initial: prefersReduced ? undefined : { opacity: 0, y: 32 },
+              whileInView: prefersReduced ? undefined : { opacity: 1, y: 0 },
+              viewport: { once: true, amount: 0.3 },
+              transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] as any, delay: prefersReduced ? 0 : idx * 0.05 }
+            })}
           >
             <div className="timeline-point" aria-hidden="true">
               <span className="tp-inner" style={{ background: theme.gradient }} />
@@ -509,78 +594,6 @@ const Footer: React.FC = () => (
   </footer>
 );
 
-// Right side section navigation rail
-const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
-  { id: 'experience', label: 'Experience', icon: '💼' },
-  { id: 'internships', label: 'Internships', icon: '🛠️' },
-  { id: 'education', label: 'Education', icon: '🎓' },
-  { id: 'skills', label: 'Skills', icon: '🧠' },
-  { id: 'achievements', label: 'Achievements', icon: '🏅' },
-  { id: 'projects', label: 'Projects', icon: '🗂️' },
-  { id: 'contact', label: 'Contact', icon: '✉️' }
-];
-const SectionRail: React.FC = () => {
-  const [active, setActive] = React.useState<string>('experience');
-  React.useEffect(() => {
-    let currentSection = 'experience';
-    
-    const updateActiveSection = () => {
-      const viewportCenter = window.scrollY + window.innerHeight / 3;
-      const isAtBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
-      
-      if (isAtBottom) {
-        currentSection = 'contact';
-        setActive('contact');
-        return;
-      }
-      
-      for (const meta of sectionMeta) {
-        const element = document.getElementById(meta.id);
-        if (!element) continue;
-        
-        const offsetTop = element.offsetTop;
-        const offsetBottom = offsetTop + element.offsetHeight;
-        
-        if (viewportCenter >= offsetTop && viewportCenter < offsetBottom) {
-          if (currentSection !== meta.id) {
-            currentSection = meta.id;
-            setActive(meta.id);
-          }
-          break;
-        }
-      }
-    };
-
-    let scrollTimeout: number;
-    const onScroll = () => {
-      if (scrollTimeout) window.cancelAnimationFrame(scrollTimeout);
-      scrollTimeout = window.requestAnimationFrame(updateActiveSection);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    updateActiveSection();
-    
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (scrollTimeout) window.cancelAnimationFrame(scrollTimeout);
-    };
-  }, []);
-  return (
-    <nav className="section-rail" aria-label="Section navigation">
-      <ul>
-        {sectionMeta.map(m => (
-          <li key={m.id}>
-            <a href={`#${m.id}`} className={m.id === active ? 'active' : ''} aria-current={m.id === active ? 'true' : undefined}>
-              <span className="icon" aria-hidden="true">{m.icon}</span>
-              <span className="sr-only">{m.label}</span>
-              <span className="tooltip" role="tooltip">{m.label}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-};
 
 // Subtle floating programming icons background layer
 const techIcons = [
@@ -644,7 +657,6 @@ const SplashScreen: React.FC<{ minMs?: number }> = ({ minMs = 3000 }) => {
       setTaglineChars(tagline.length);
       return;
     }
-    // Scale typing durations to consume ~60% of minMs (capped) for a smoother paced intro
     const typingBudget = Math.min(minMs * 0.6, 2400);
     const titleDuration = typingBudget * 0.40;
     const subDuration = typingBudget * 0.30;
@@ -669,9 +681,7 @@ const SplashScreen: React.FC<{ minMs?: number }> = ({ minMs = 3000 }) => {
         setSubChars(fullSub.length);
         setTaglineChars(tagline.length);
       }
-      if (elapsed < totalTyping) {
-        requestAnimationFrame(step);
-      }
+      if (elapsed < totalTyping) requestAnimationFrame(step);
     };
     const raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
@@ -714,7 +724,7 @@ const SplashScreen: React.FC<{ minMs?: number }> = ({ minMs = 3000 }) => {
   );
 };
 
-// Humorous rotating coding tagline (independent component)
+// Humorous rotating coding tagline
 const RotatingTagline: React.FC = () => {
   const phrases = [
     'docker ps | grep inspiration',
@@ -734,9 +744,7 @@ const RotatingTagline: React.FC = () => {
       if (!deleting) {
         const nextLen = text.length + 1;
         setText(full.slice(0, nextLen));
-        if (nextLen === full.length) {
-          setTimeout(() => setDeleting(true), 850);
-        }
+        if (nextLen === full.length) setTimeout(() => setDeleting(true), 850);
       } else {
         const nextLen = text.length - 1;
         setText(full.slice(0, nextLen));
@@ -821,8 +829,14 @@ const XPBadge: React.FC = () => {
 // Memoized skills section (performance optimized)
 const SkillsSection: React.FC = React.memo(() => {
   const categories = React.useMemo(() => Object.entries(skills) as [string, SkillItem[]][], []);
-  // Intersection observer to reveal category blocks
+  const isMobile = useIsMobile();
+  // Intersection observer only on non-mobile for progressive reveal
   React.useEffect(() => {
+    if (isMobile) {
+      // Immediately mark all categories revealed
+      document.querySelectorAll('.skill-category-enhanced').forEach(el => el.classList.add('revealed'));
+      return;
+    }
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -833,11 +847,11 @@ const SkillsSection: React.FC = React.memo(() => {
     }, { threshold: 0.25 });
     document.querySelectorAll('.skill-category-enhanced').forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
   return (
     <div className="skills-stacked" data-perf="optimized">
       {categories.map(([category, items]) => (
-        <div key={category} className="skill-category-enhanced reveal-on-scroll">
+        <div key={category} className={"skill-category-enhanced reveal-on-scroll" + (isMobile ? ' revealed' : '')}>
           <h3 className="skill-category-title">{category}</h3>
           <div className="skill-items-row wrap">
             {items.map(skill => (
