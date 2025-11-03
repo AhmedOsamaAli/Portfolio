@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Asset definitions for portfolio images
 export interface ImageAsset {
   file: string; // fallback file path in /public
   alt: string;
@@ -24,14 +25,20 @@ export const assets = {
     loading: 'lazy'
   } as ImageAsset,
   dfki: {
-    file: '/dfki.jpg',
+    file: '/dfki2.jpg',
+    alt: 'DFKI logo',
+    className: 'logo',
+    loading: 'lazy'
+  } as ImageAsset,
+  dfki2: {
+    file: '/dfki2.jpg',
     alt: 'DFKI logo',
     className: 'logo',
     loading: 'lazy'
   } as ImageAsset
 };
 
-export type AssetKey = keyof typeof assets;
+export type AssetKey = 'headshot' | 'microsoft' | 'dfki' | 'dfki2';
 
 export function Img({ asset, ...rest }: { asset: AssetKey } & React.ImgHTMLAttributes<HTMLImageElement>) {
   const data = assets[asset];

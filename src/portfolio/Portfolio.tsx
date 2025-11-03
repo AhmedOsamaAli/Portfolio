@@ -29,7 +29,17 @@ const Section: React.FC<{ id: string; title: string; children: React.ReactNode }
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      <h2>{title}</h2>
+      <motion.h2 
+        className="section-title-enhanced"
+        initial={prefersReduced ? false : { opacity: 0, x: -30 }}
+        whileInView={prefersReduced ? {} : { opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <span className="section-title-icon">{'// '}</span>
+        <span className="section-title-text">{title}</span>
+        <span className="section-title-line"></span>
+      </motion.h2>
       {children}
     </motion.section>
   );
@@ -77,35 +87,43 @@ export const Portfolio: React.FC = () => {
       <main>
         <Section id="experience" title="Experience">
           {experiences.map(exp => (
-            <Card3D key={exp.company + exp.start} className="card">
-              <header>
+            <Card3D key={exp.company + exp.start} className="card experience-card">
+              <div className="exp-flex">
+                <div className="exp-info">
+                  <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
-                    {exp.logo && (
-                      exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
-                    )}
-                <span className="dates">{exp.start} – {exp.end}</span>
-                <span className="location">{exp.location}</span>
-              </header>
-              <ul>
-                {exp.bullets.map(b => <li key={b}>{b}</li>)}
-              </ul>
+                    <span className="dates">{exp.start} – {exp.end}</span>
+                    <span className="location">{exp.location}</span>
+                  </header>
+                  <ul>
+                    {exp.bullets.map(b => <li key={b}>{b}</li>)}
+                  </ul>
+                </div>
+                {exp.logo && (
+                  exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
+                )}
+              </div>
             </Card3D>
           ))}
         </Section>
         <Section id="internships" title="Internships">
           {internships.map(exp => (
-            <Card3D key={exp.company + exp.start} className="card">
-              <header>
+            <Card3D key={exp.company + exp.start} className="card internship-card">
+              <div className="exp-flex">
+                <div className="exp-info">
+                  <header>
                     <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
-                    {exp.logo && (
-                      exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
-                    )}
-                <span className="dates">{exp.start} – {exp.end}</span>
-                <span className="location">{exp.location}</span>
-              </header>
-              <ul>
-                {exp.bullets.map(b => <li key={b}>{b}</li>)}
-              </ul>
+                    <span className="dates">{exp.start} – {exp.end}</span>
+                    <span className="location">{exp.location}</span>
+                  </header>
+                  <ul>
+                    {exp.bullets.map(b => <li key={b}>{b}</li>)}
+                  </ul>
+                </div>
+                {exp.logo && (
+                  exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
+                )}
+              </div>
             </Card3D>
           ))}
         </Section>
@@ -301,11 +319,30 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+  const prefersReduced = useReducedMotion();
+  
   return (
     <header className={`site-header ${transparent ? 'transparent' : ''} ${hide ? 'hide' : ''}`}>    
       <div className="brand">
-        <h1 className="glow">Ahmed Osama</h1>
-  <p className="tag">Software Engineer</p>
+        <motion.h1 
+          className="glow brand-name"
+          initial={prefersReduced ? false : { opacity: 0, x: -20 }}
+          animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <span className="first-name">Ahmed</span>
+          <span className="last-name">Osama</span>
+        </motion.h1>
+        <motion.p 
+          className="tag brand-title"
+          initial={prefersReduced ? false : { opacity: 0, x: -20 }}
+          animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <span className="title-icon">{'{ '}</span>
+          Software Engineer
+          <span className="title-icon">{' }'}</span>
+        </motion.p>
       </div>
       <Nav />
       <ThemeToggle />
@@ -337,7 +374,14 @@ const Hero: React.FC = () => {
       <div className="hero-inner">
   <Img asset="headshot" />
   <TextReveal text="Software Engineer crafting resilient & performant products." className="hero-title" />
-  <p className="hero-sub">Focused on clean architecture, automation, performance optimization and developer experience. I build reliable pipelines and user-centric full-stack applications.</p>
+  <motion.p 
+    className="hero-sub hero-subtitle-enhanced"
+    initial={prefersReduced ? false : { opacity: 0, y: 20 }}
+    animate={prefersReduced ? {} : { opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.6 }}
+  >
+    <span className="highlight-word">Focused</span> on <span className="highlight-word">clean architecture</span>, <span className="highlight-word">automation</span>, <span className="highlight-word">performance optimization</span> and <span className="highlight-word">developer experience</span>. I build <span className="highlight-word">reliable pipelines</span> and <span className="highlight-word">user-centric</span> full-stack applications.
+  </motion.p>
         <RotatingTagline />
         <div className="hero-cta">
           <a href="#projects" className="btn primary">View Projects</a>

@@ -36,8 +36,85 @@ body {line-height:1.5;}
 .site-header.transparent {background:rgba(255,255,255,0.02);border-bottom-color:transparent;box-shadow:none;}
 :root[data-theme='dark'] .site-header.transparent {background:rgba(0,0,0,0.05);} 
 .site-header.hide {transform:translateY(-100%);opacity:0;} 
-.site-header .brand h1 {margin:0;font-size:1.65rem;color:var(--accent-title);font-family:'Cormorant Garamond', serif;}
-.site-header .brand .tag {margin:0;font-size:0.85rem;color:var(--accent-text);}
+/* Enhanced Brand Name */
+.site-header .brand h1 {
+  margin:0;
+  font-size:1.65rem;
+  color:var(--accent-title);
+  font-family:'Cormorant Garamond', serif;
+}
+
+.brand-name {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.brand-name .first-name {
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.brand-name .first-name::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s ease;
+}
+
+.brand-name:hover .first-name::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.brand-name .last-name {
+  font-weight: 400;
+  opacity: 0.9;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.brand-name:hover .last-name {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* Enhanced Brand Title */
+.site-header .brand .tag {
+  margin:0;
+  font-size:0.85rem;
+  color:var(--accent-text);
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+.title-icon {
+  color: var(--accent-title);
+  font-weight: 700;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.brand-title:hover .title-icon {
+  opacity: 1;
+  transform: scale(1.15);
+}
 /* Hamburger Menu */
 .hamburger {display:none;flex-direction:column;gap:5px;background:transparent;border:none;cursor:pointer;padding:8px;z-index:100;}
 .hamburger span {display:block;width:25px;height:3px;background:var(--accent-title);border-radius:3px;transition:all 0.3s ease;}
@@ -52,6 +129,81 @@ nav a:hover {color:var(--accent-title);background:rgba(42,92,170,0.08);}
 main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 .section {margin-bottom:3.5rem;scroll-margin-top:90px;} /* ensures anchor links account for sticky header height */
 .section h2 {margin:0 0 1.25rem;font-size:1.3rem;letter-spacing:0.5px;color:var(--accent-title);border-bottom:2px solid var(--accent-line);display:inline-block;padding-bottom:4px;font-weight:600;}
+
+/* Enhanced Section Titles */
+.section-title-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  color: var(--accent-title);
+  font-weight: 700;
+  position: relative;
+  font-family: 'Courier New', monospace;
+  border: none;
+  padding-bottom: 0;
+}
+
+.section-title-icon {
+  color: var(--accent-line);
+  font-weight: 700;
+  opacity: 0.6;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.section-title-enhanced:hover .section-title-icon {
+  opacity: 1;
+  transform: translateX(-3px);
+}
+
+.section-title-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.section-title-text::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--gradient);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-title-enhanced:hover .section-title-text::after {
+  width: 100%;
+}
+
+.section-title-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--accent-line),
+    transparent
+  );
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.section-title-enhanced:hover .section-title-line {
+  opacity: 0.8;
+  animation: lineExpand 0.6s ease;
+}
+
+@keyframes lineExpand {
+  0% { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
 .card {
   background:var(--glass);
   backdrop-filter:blur(14px);
@@ -63,11 +215,57 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   transition:transform .35s cubic-bezier(.17,.67,.27,1), box-shadow .35s, border-color .35s;
   transform-style:preserve-3d;
   perspective:1000px;
+  position: relative;
   /* Performance optimizations */
   will-change: transform;
   contain: layout style paint;
 } 
-.card:hover {transform:translateY(-6px) scale(1.01);box-shadow:0 16px 40px -10px rgba(0,0,0,0.35);border-color:var(--accent-title);} 
+
+/* 3D depth layers with dynamic lighting */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(74, 144, 226, 0.15),
+    rgba(42, 92, 170, 0.05) 50%,
+    transparent 70%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: overlay;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: var(--gradient);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(12px);
+}
+
+.card:hover {
+  transform:translateY(-8px) translateZ(20px) scale(1.02);
+  box-shadow:0 20px 50px -10px rgba(0,0,0,0.4);
+  border-color:var(--accent-title);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover::after {
+  opacity: 0.3;
+} 
 .card header {display:flex;flex-direction:column;gap:0.15rem;margin-bottom:0.5rem;}
 .card h3 {
   margin:0;
@@ -389,7 +587,50 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   }
 }
 .hero-title {font-size:clamp(1.8rem,4.2vw,3rem);background:var(--gradient);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;margin:0;line-height:1.05;}
-.hero-sub {max-width:760px;font-size:1.05rem;margin:0;color:var(--text);} 
+.hero-sub {
+  max-width:760px;
+  font-size:1.05rem;
+  margin:0;
+  color:var(--text);
+}
+
+/* Enhanced Hero Subtitle */
+.hero-subtitle-enhanced {
+  line-height: 1.75;
+  letter-spacing: 0.3px;
+}
+
+.hero-subtitle-enhanced .highlight-word {
+  position: relative;
+  font-weight: 600;
+  color: var(--accent-text);
+  padding: 0 0.2rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.hero-subtitle-enhanced .highlight-word::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--gradient);
+  opacity: 0;
+  transform: scaleX(0);
+  transition: all 0.3s ease;
+}
+
+.hero-subtitle-enhanced .highlight-word:hover {
+  color: var(--accent-title);
+  transform: translateY(-1px);
+}
+
+.hero-subtitle-enhanced .highlight-word:hover::after {
+  opacity: 1;
+  transform: scaleX(1);
+} 
 .hero-cta {display:flex;gap:1rem;margin-top:.5rem;flex-wrap:wrap;}
 .rotating-tagline {margin-top:.35rem;font-size:.85rem;font-family:Consolas, "Courier New", monospace;background:rgba(42,92,170,0.08);padding:.45rem .7rem;border-radius:10px;border:1px solid var(--border);color:var(--accent-line);position:relative;overflow:hidden;}
 .rotating-tagline code {white-space:nowrap;}
@@ -1162,6 +1403,65 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   .education-card .edu-flex {flex-direction:row;align-items:flex-start;}
 }
 
+/* Experience & Internship cards with company logos on the right */
+.experience-card .exp-flex,
+.internship-card .exp-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.experience-card .exp-info,
+.internship-card .exp-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Company logo styling - matches education logo with theme support */
+.experience-card .exp-flex img,
+.internship-card .exp-flex img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--border);
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dark theme support for company logos */
+[data-theme='dark'] .experience-card .exp-flex img,
+[data-theme='dark'] .internship-card .exp-flex img,
+[data-theme='dark'] .edu-logo-large {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+}
+
+/* Hover effect for company logos */
+.experience-card .exp-flex img:hover,
+.internship-card .exp-flex img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px -6px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--accent);
+}
+
+@media (max-width: 760px) {
+  .experience-card .exp-flex img,
+  .internship-card .exp-flex img {
+    width: 70px;
+    height: 70px;
+    padding: 6px;
+  }
+  
+  .experience-card .exp-flex,
+  .internship-card .exp-flex {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
 /* ===== WOW EFFECTS ===== */
 
 /* Holographic Card Shine Effect */
@@ -1898,6 +2198,15 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   }
 }
 
+#hero canvas {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 /* Animation for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .stat-icon,
@@ -1910,4 +2219,45 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   .quick-action-item:hover {
     transform: none;
   }
+}
+
+/* CSS 3D Card Enhancements */
+@keyframes float3d {
+  0%, 100% { transform: translateY(0px) translateZ(0px); }
+  50% { transform: translateY(-5px) translateZ(10px); }
+}
+
+.card.education-card {
+  animation: float3d 6s ease-in-out infinite;
+}
+
+.card.achievement {
+  animation: float3d 5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Add subtle 3D rotate on hover for specific cards */
+.card:hover {
+  animation: none;
+}
+
+/* Shimmer effect for cards */
+@keyframes shimmer3d {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.card::before {
+  background: linear-gradient(
+    110deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer3d 3s infinite;
 }
