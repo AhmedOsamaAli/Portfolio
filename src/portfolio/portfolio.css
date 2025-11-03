@@ -654,6 +654,44 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 }
 .site-footer {text-align:center;padding:2rem 1rem;font-size:0.7rem;color:var(--accent-line);} 
 
+/* ========================================
+   🖥️ STATIC CODE BACKGROUND
+   Random binary and code symbols
+   ======================================== */
+.code-bg-static {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.code-elem {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(90, 164, 194, 0.15);
+  text-shadow: 0 0 4px rgba(90, 164, 194, 0.2);
+  letter-spacing: 1px;
+}
+
+/* Light mode - more visible */
+:root[data-theme='light'] .code-elem {
+  color: rgba(42, 92, 170, 0.18);
+  text-shadow: 0 0 3px rgba(42, 92, 170, 0.15);
+}
+
+/* Mobile - smaller and fewer */
+@media (max-width: 760px) {
+  .code-elem {
+    font-size: 0.75rem;
+  }
+  .code-elem:nth-child(n+16) {
+    display: none;
+  }
+}
+
 /* Contact links */
 .contact-links { margin-top: .5rem; }
 .contact-intro { 

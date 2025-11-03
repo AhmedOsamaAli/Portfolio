@@ -3,12 +3,10 @@ import { experiences, internships, education, skills, achievements, projects, Sk
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
-import ParticlesBackground from './ParticlesBackground';
 import { ICPCLogo, EOILogo, HackerCupLogo } from './CompanyLogos';
 import { Card3D } from './Card3D';
 import CursorTrail from './CursorTrail';
 import { RippleEffect } from './RippleEffect';
-import { ParallaxSections } from './ParallaxSections';
 import { TextReveal } from './TextReveal';
 import { QuickActionMenu } from './QuickActionMenu';
 import { getProjectTheme, getTechIcon } from './projectThemes';
@@ -164,6 +162,7 @@ export const Portfolio: React.FC = () => {
   const showSplashInitially = typeof window !== 'undefined';
   const [showSplash, setShowSplash] = React.useState(showSplashInitially);
   const initialReady = useInitialReadiness('img[alt="headshot"]', 3000, 5000);
+  const isMobile = useIsMobile();
 
   // Force scroll to top on mount/refresh
   React.useEffect(() => {
@@ -193,9 +192,6 @@ export const Portfolio: React.FC = () => {
       <ScrollProgress />
       <CursorTrail />
       <RippleEffect />
-      <ParallaxSections />
-      <ParticlesBackground />
-      <FloatingIcons />
       <SectionRail />
       <QuickActionMenu />
       <Header />
@@ -263,9 +259,11 @@ export const Portfolio: React.FC = () => {
               </Card3D>
             ))}
         </Section>
-        <Section id="skills" title="Skills">
-          <SkillsSection />
-        </Section>
+        {!isMobile && (
+          <Section id="skills" title="Skills">
+            <SkillsSection />
+          </Section>
+        )}
         <Section id="achievements" title="Achievements">
           {achievements.map(a => {
             // Get the appropriate logo component based on achievement title
@@ -572,40 +570,6 @@ const Footer: React.FC = () => (
     <small>&copy; {new Date().getFullYear()} Ahmed Osama.</small>
   </footer>
 );
-
-
-// Subtle floating programming icons background layer
-const techIcons = [
-  { id: 'ts', path: 'M3 3h18v18H3z', label: 'TypeScript', fill: '#2f74c0', inner: 'M9.5 10v1.4h2.2v7.1h2.1v-7.1h2.3V10H9.5zm.2-3.9V8h7.9V6.1h-3V3h-2.1v3.1h-2.8z' },
-  { id: 'react', path: 'M12 11.1a.9.9 0 100 1.8.9.9 0 000-1.8z', label: 'React', fill: '#61dafb', ring: true },
-  { id: 'node', path: 'M12 2l9.5 5.5v9L12 22l-9.5-5.5v-9L12 2z', label: 'Node.js', fill: '#83cd29' },
-  { id: 'python', path: 'M12.9 3.1c-.6-1.7-2.2-1.7-2.2-1.7H9.3c-1.9 0-2.2 1.4-2.2 1.4v2.5h5.8v1.3H5.7S3 6.3 3 9.1c0 2.9 2.7 2.8 2.7 2.8h1.5v-2.1s-.1-2.7 2.6-2.7h4.4s2.5.1 2.5-2.5c0-2.6-1.8-3.1-1.8-3.1h-2M10 4.3a.8.8 0 110-1.6.8.8 0 010 1.6zM11.1 20.9c.6 1.7 2.2 1.7 2.2 1.7h1.4c1.9 0 2.2-1.4 2.2-1.4v-2.5h-5.8v-1.3h7.2s2.7.4 2.7-2.4c0-2.9-2.7-2.8-2.7-2.8h-1.5v2.1s.1 2.7-2.6 2.7H12c-2.5 0-2.5 2.5-2.5 2.5 0 2.6 1.8 3.1 1.8 3.1h1.8M14 19.7a.8.8 0 110 1.6.8.8 0 010-1.6z', label: 'Python', fill: '#3776ab' },
-  { id: 'git', path: 'M2 12l10-10 10 10-10 10L2 12zm9-3v6h2V9h-2zm0 8v2h2v-2h-2z', label: 'Git', fill: '#f05133' }
-];
-
-const FloatingIcons: React.FC = () => {
-  const prefersReduced = useReducedMotion();
-  if (prefersReduced) return null;
-  return (
-    <div className="floating-icons" aria-hidden="true">
-      {techIcons.map((ico, i) => (
-        <div
-          key={ico.id}
-          className="floating-icon"
-          style={{ ['--i' as any]: i }}
-        >
-          <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
-            {ico.ring && (
-              <circle cx="12" cy="12" r="10" stroke="#61dafb" strokeWidth="1.4" strokeOpacity="0.6" />
-            )}
-            <path d={ico.path} fill={ico.fill} fillOpacity="0.85" />
-            {ico.inner && <path d={ico.inner} fill="#fff" fillOpacity="0.85" />}
-          </svg>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 
 export default Portfolio;
