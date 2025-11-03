@@ -17,9 +17,19 @@ export interface EducationItem {
   end: string;
   notes?: string[];
 }
+export interface SkillItem {
+  name: string;
+  icon: string;
+  color: string;
+  level?: number; // 1-5 proficiency
+}
+
 export interface SkillGroups {
-  programming: string[];
-  miscellaneous: string[];
+  languages: SkillItem[];
+  frameworks: SkillItem[];
+  databases: SkillItem[];
+  tools: SkillItem[];
+  cloud: SkillItem[];
 }
 export interface AchievementItem {
   title: string;
@@ -96,8 +106,49 @@ export const education: EducationItem[] = [
 ];
 
 export const skills: SkillGroups = {
-  programming: ['C/C++', 'Java', 'Kotlin', 'Python', 'JavaScript', 'SQL', 'C#', 'Node.js', 'React', 'MongoDB', 'Express'],
-  miscellaneous: ['Linux', 'Git', 'Docker', 'Kafka', 'AWS', 'PostgreSQL', 'Bash']
+  languages: [
+    { name: 'Python', icon: '🐍', color: '#3776ab', level: 5 },
+    { name: 'TypeScript', icon: '📘', color: '#3178c6', level: 5 },
+    { name: 'JavaScript', icon: '⚡', color: '#f7df1e', level: 5 },
+    { name: 'Java', icon: '☕', color: '#007396', level: 4 },
+    { name: 'Kotlin', icon: '🎯', color: '#7F52FF', level: 4 },
+    { name: 'C/C++', icon: '⚙️', color: '#00599C', level: 4 },
+    { name: 'C#', icon: '🎮', color: '#239120', level: 3 },
+    { name: 'SQL', icon: '🗄️', color: '#4479A1', level: 4 },
+    { name: 'Bash', icon: '🐚', color: '#4EAA25', level: 4 }
+  ],
+  frameworks: [
+    { name: 'React', icon: '⚛️', color: '#61dafb', level: 5 },
+    { name: 'Next.js', icon: '▲', color: '#000000', level: 4 },
+    { name: 'Node.js', icon: '🟢', color: '#339933', level: 5 },
+    { name: 'Express.js', icon: '🚂', color: '#000000', level: 5 },
+    { name: 'FastAPI', icon: '⚡', color: '#009688', level: 4 },
+    { name: 'Nest.js', icon: '🐱', color: '#E0234E', level: 4 },
+    { name: 'ASP.NET', icon: '🔷', color: '#512BD4', level: 3 },
+    { name: 'Android SDK', icon: '🤖', color: '#3DDC84', level: 4 },
+    { name: 'Vite', icon: '⚡', color: '#646CFF', level: 4 }
+  ],
+  databases: [
+    { name: 'MongoDB', icon: '🍃', color: '#47A248', level: 5 },
+    { name: 'PostgreSQL', icon: '🐘', color: '#4169E1', level: 4 },
+    { name: 'Redis', icon: '🔴', color: '#DC382D', level: 4 },
+    { name: 'Neo4j', icon: '🔵', color: '#008CC1', level: 3 },
+    { name: 'ClickHouse', icon: '⚡', color: '#FFCC01', level: 3 }
+  ],
+  tools: [
+    { name: 'Git', icon: '🔀', color: '#F05032', level: 5 },
+    { name: 'Docker', icon: '🐳', color: '#2496ED', level: 5 },
+    { name: 'Kafka', icon: '📨', color: '#231F20', level: 4 },
+    { name: 'Socket.IO', icon: '🔌', color: '#010101', level: 4 },
+    { name: 'JWT', icon: '🔐', color: '#000000', level: 4 },
+    { name: 'Linux', icon: '🐧', color: '#FCC624', level: 5 },
+    { name: 'LeakCanary', icon: '🔍', color: '#FF6F00', level: 3 },
+    { name: 'Vitest', icon: '✅', color: '#6E9F18', level: 4 }
+  ],
+  cloud: [
+    { name: 'AWS', icon: '☁️', color: '#FF9900', level: 3 },
+    { name: 'Azure', icon: '☁️', color: '#0089D6', level: 2 }
+  ]
 };
 
 export const achievements: AchievementItem[] = [

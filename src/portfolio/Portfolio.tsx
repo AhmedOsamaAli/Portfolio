@@ -1,5 +1,5 @@
 import React from 'react';
-import { experiences, internships, education, skills, achievements, projects } from './data';
+import { experiences, internships, education, skills, achievements, projects, SkillItem } from './data';
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
@@ -150,43 +150,36 @@ export const Portfolio: React.FC = () => {
             ))}
         </Section>
         <Section id="skills" title="Skills">
-          <div className="skills-grid">
-            <div className="skill-category">
-              <h3>Programming</h3>
-              <div className="pill-group">
-                {skills.programming.map((s, idx) => (
-                  <motion.span
-                    key={s}
-                    className="pill skill-pill"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.08, y: -3 }}
-                  >
-                    {s}
-                  </motion.span>
-                ))}
-              </div>
-            </div>
-            <div className="skill-category">
-              <h3>Miscellaneous</h3>
-              <div className="pill-group">
-                {skills.miscellaneous.map((s, idx) => (
-                  <motion.span
-                    key={s}
-                    className="pill skill-pill"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.08, y: -3 }}
-                  >
-                    {s}
-                  </motion.span>
-                ))}
-              </div>
-            </div>
+          <div className="skills-stacked">
+            {Object.entries(skills).map(([category, items], catIdx) => (
+              <motion.div
+                key={category}
+                className="skill-category-enhanced"
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: catIdx * 0.05, duration: 0.55 }}
+              >
+                <h3 className="skill-category-title">{category}</h3>
+                <div className="skill-items-row wrap">
+                  {items.map((skill: SkillItem, idx: number) => (
+                    <motion.div
+                      key={skill.name}
+                      className="skill-item-3d"
+                      style={{ '--skill-color': skill.color } as React.CSSProperties}
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.015, duration: 0.3 }}
+                      whileHover={{ scale: 1.08, y: -5, rotateY: 6 }}
+                    >
+                      <span className="skill-icon-3d">{skill.icon}</span>
+                      <span className="skill-name-3d">{skill.name}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </Section>
         <Section id="achievements" title="Achievements">
