@@ -69,15 +69,132 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 } 
 .card:hover {transform:translateY(-6px) scale(1.01);box-shadow:0 16px 40px -10px rgba(0,0,0,0.35);border-color:var(--accent-title);} 
 .card header {display:flex;flex-direction:column;gap:0.15rem;margin-bottom:0.5rem;}
-.card h3 {margin:0;font-size:1.05rem;font-weight:600;color:var(--accent-text);} 
-.company {color:var(--accent-title);} 
-.dates,.location,.institution {font-size:0.75rem;font-weight:500;color:var(--accent-line);} 
+.card h3 {
+  margin:0;
+  font-size:1.05rem;
+  font-weight:600;
+  color:var(--accent-text);
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.card:hover h3 {
+  color: var(--accent-title);
+  transform: translateX(2px);
+}
+
+.company {
+  color:var(--accent-title);
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.card:hover .company {
+  letter-spacing: 0.5px;
+}
+
+.dates,.location,.institution {
+  font-size:0.75rem;
+  font-weight:500;
+  color:var(--accent-line);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+} 
 .logo {width:42px;height:42px;object-fit:contain;margin-top:4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));}
-.card ul {margin:0.35rem 0 0.2rem 1.2rem;padding:0;font-size:0.82rem;}
-.card ul li {margin:0.25rem 0;}
-.achievement p {margin:0.4rem 0;} 
-.achievement-title {display:flex;align-items:center;gap:.55rem;}
-.achievement-icon {display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;font-size:1.1rem;border-radius:12px;background:var(--gradient);color:#fff;box-shadow:0 6px 18px -6px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,0.3);position:relative;}
+.card ul {
+  margin:0.35rem 0 0.2rem 1.2rem;
+  padding:0;
+  font-size:0.9rem;
+  list-style: none;
+}
+
+.card ul li {
+  margin:0.3rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.65;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
+  opacity: 0.9;
+  letter-spacing: 0.2px;
+}
+
+/* Custom bullet points with gradient */
+.card ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  font-size: 1.1rem;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.card ul li:hover::before {
+  transform: translateX(4px);
+}
+
+.card ul li:hover {
+  transform: translateX(4px);
+  color: var(--accent-text);
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* Highlight effect on hover */
+.card ul li::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  top: -2px;
+  bottom: -2px;
+  background: linear-gradient(90deg, transparent, rgba(42, 92, 170, 0.08), transparent);
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card ul li:hover::after {
+  opacity: 1;
+}
+
+/* Make keywords stand out */
+.card ul li:first-child {
+  font-weight: 500;
+  opacity: 1;
+}
+.achievement p {
+  margin:0.4rem 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  opacity: 0.95;
+} 
+.achievement-title {
+  display:flex;
+  align-items:center;
+  gap:1.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color 0.3s ease;
+}
+.achievement-title:hover {
+  color: var(--accent-text);
+}
+.achievement-icon {display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;font-size:1.1rem;border-radius:12px;background:var(--gradient);color:#fff;box-shadow:0 6px 18px -6px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,0.3);position:relative;flex-shrink:0;margin-right:0.3rem;}
 .achievement-icon::after {content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(60deg,rgba(255,255,255,0.25),transparent 65%);mix-blend-mode:overlay;opacity:.8;}
 .achievement-text {flex:1;}
 @media (max-width:600px){
@@ -86,7 +203,7 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 .links a {display:inline-block;margin-right:0.6rem;font-size:0.7rem;text-decoration:none;color:var(--accent-title);background:rgba(42,92,170,0.08);padding:4px 8px;border-radius:6px;} 
 .links a:hover {background:var(--accent-title);color:#fff;}
 .pill-group {display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.4rem;}
-.pill {background:var(--gradient);color:#fff;font-size:0.65rem;padding:6px 12px;border-radius:999px;letter-spacing:0.5px;font-weight:500;box-shadow:0 2px 6px rgba(0,0,0,0.25);position:relative;overflow:hidden;} 
+.pill {background:var(--gradient);color:#fff;font-size:0.75rem;padding:7px 14px;border-radius:999px;letter-spacing:0.5px;font-weight:500;box-shadow:0 2px 6px rgba(0,0,0,0.25);position:relative;overflow:hidden;} 
 .pill.stack {background:linear-gradient(135deg,var(--accent-line),var(--accent-title));}
 .pill::after {content:'';position:absolute;inset:0;background:linear-gradient(60deg,rgba(255,255,255,0.15),transparent 60%);mix-blend-mode:overlay;opacity:0;transition:opacity .3s;}
 .pill:hover::after {opacity:1;}
@@ -843,9 +960,84 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   transition:width .35s;
 }
 .timeline-content .project-title a:hover::after {width:100%;}
-.project-dates {font-size:0.7rem;font-weight:600;color:var(--accent-line);letter-spacing:.5px;}
-.project-bullets {margin:0.4rem 0 0.2rem 1.1rem;padding:0;font-size:0.78rem;}
-.project-bullets li {margin:0.25rem 0;line-height:1.35;}
+.project-dates {
+  font-size:0.7rem;
+  font-weight:600;
+  color:var(--accent-line);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  transition: all 0.3s ease;
+}
+.project-dates:hover {
+  opacity: 1;
+  letter-spacing: 1.2px;
+}
+.project-bullets {
+  margin:0.4rem 0 0.2rem 1.1rem;
+  padding:0;
+  font-size:0.88rem;
+  list-style: none;
+}
+
+.project-bullets li {
+  margin:0.35rem 0;
+  line-height:1.6;
+  padding-left: 1.5rem;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
+  opacity: 0.95;
+  letter-spacing: 0.3px;
+}
+
+/* Animated bullet points for projects */
+.project-bullets li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+  animation: bulletPulse 2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.1s);
+}
+
+@keyframes bulletPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.project-bullets li:hover::before {
+  transform: scale(1.3) rotate(45deg);
+  animation: none;
+}
+
+.project-bullets li:hover {
+  padding-left: 1.8rem;
+  color: var(--accent-text);
+  font-weight: 500;
+  opacity: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced readability */
+.project-bullets li:first-child {
+  font-weight: 500;
+}
+
+/* Add index for staggered animation */
+.project-bullets li:nth-child(1)::before { --i: 0; }
+.project-bullets li:nth-child(2)::before { --i: 1; }
+.project-bullets li:nth-child(3)::before { --i: 2; }
+.project-bullets li:nth-child(4)::before { --i: 3; }
+.project-bullets li:nth-child(5)::before { --i: 4; }
+.project-bullets li:nth-child(6)::before { --i: 5; }
+.project-bullets li:nth-child(7)::before { --i: 6; }
+.project-bullets li:nth-child(8)::before { --i: 7; }
 .stack-tags {display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.6rem;}
 
 /* Enhanced Tech Stack Pills */

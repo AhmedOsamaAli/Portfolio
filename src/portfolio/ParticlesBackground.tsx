@@ -36,7 +36,7 @@ const ParticlesBackground: React.FC = () => {
     fpsLimit: 60,
     particles: {
       number: {
-        value: 80,
+        value: 100,
         density: {
           enable: true,
           width: 1920,
@@ -47,13 +47,13 @@ const ParticlesBackground: React.FC = () => {
         value: ['#2A5CAA', '#3A6CB7', '#1A4B99', '#5B8FCC']
       },
       shape: {
-        type: ['circle', 'triangle', 'edge']
+        type: ['circle', 'triangle', 'star', 'polygon']
       },
       opacity: {
-        value: { min: 0.1, max: 0.3 }
+        value: { min: 0.25, max: 0.5 }
       },
       size: {
-        value: { min: 2, max: 6 }
+        value: { min: 2, max: 7 }
       },
       move: {
         enable: true,
@@ -67,10 +67,10 @@ const ParticlesBackground: React.FC = () => {
       },
       links: {
         enable: true,
-        distance: 150,
+        distance: 180,
         color: '#2A5CAA',
-        opacity: 0.15,
-        width: 1
+        opacity: 0.3,
+        width: 1.5
       }
     },
     interactivity: {
@@ -86,9 +86,9 @@ const ParticlesBackground: React.FC = () => {
       },
       modes: {
         grab: {
-          distance: 140,
+          distance: 160,
           links: {
-            opacity: 0.3
+            opacity: 0.5
           }
         }
       }
@@ -114,10 +114,7 @@ const ParticlesBackground: React.FC = () => {
         value: ['#4A7FD5', '#5B8FCC', '#6B9FDD', '#7BAFEE']
       },
       shape: {
-        type: ['circle', 'triangle', 'star', 'polygon'],
-        polygon: {
-          sides: 6
-        }
+        type: ['circle', 'triangle', 'star', 'polygon']
       },
       opacity: {
         value: { min: 0.2, max: 0.5 }
