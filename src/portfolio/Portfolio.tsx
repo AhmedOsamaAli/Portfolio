@@ -506,44 +506,48 @@ const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
 const SectionRail: React.FC = () => {
   const [active, setActive] = React.useState<string>('experience');
   React.useEffect(() => {
-    const handleScroll = () => {
-      const sections = sectionMeta.map(meta => {
-        const el = document.getElementById(meta.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          return { id: meta.id, top: rect.top, bottom: rect.bottom, element: el };
-        }
-        return null;
-      }).filter(Boolean);
-
-      // Check if we're near the bottom of the page
-      const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+    let currentSection = 'experience';
+    
+    const updateActiveSection = () => {
+      const viewportCenter = window.scrollY + window.innerHeight / 3;
+      const isAtBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
       
-      if (nearBottom) {
+      if (isAtBottom) {
+        currentSection = 'contact';
         setActive('contact');
         return;
       }
-
-      // Find the section that's currently most visible
-      for (const section of sections) {
-        if (section && section.top <= window.innerHeight / 2 && section.bottom > window.innerHeight / 2) {
-          setActive(section.id);
-          return;
-        }
-      }
-
-      // Fallback: find the first section in viewport
-      for (const section of sections) {
-        if (section && section.top < window.innerHeight && section.bottom > 0) {
-          setActive(section.id);
-          return;
+      
+      for (const meta of sectionMeta) {
+        const element = document.getElementById(meta.id);
+        if (!element) continue;
+        
+        const offsetTop = element.offsetTop;
+        const offsetBottom = offsetTop + element.offsetHeight;
+        
+        if (viewportCenter >= offsetTop && viewportCenter < offsetBottom) {
+          if (currentSection !== meta.id) {
+            currentSection = meta.id;
+            setActive(meta.id);
+          }
+          break;
         }
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
-    return () => window.removeEventListener('scroll', handleScroll);
+    let scrollTimeout: number;
+    const onScroll = () => {
+      if (scrollTimeout) window.cancelAnimationFrame(scrollTimeout);
+      scrollTimeout = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateActiveSection();
+    
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (scrollTimeout) window.cancelAnimationFrame(scrollTimeout);
+    };
   }, []);
   return (
     <nav className="section-rail" aria-label="Section navigation">
