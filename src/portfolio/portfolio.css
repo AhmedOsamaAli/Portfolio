@@ -669,17 +669,17 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
 .code-elem {
   position: absolute;
   font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(90, 164, 194, 0.15);
-  text-shadow: 0 0 4px rgba(90, 164, 194, 0.2);
-  letter-spacing: 1px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(90, 164, 194, 0.22);
+  text-shadow: 0 0 6px rgba(90, 164, 194, 0.3);
+  letter-spacing: 1.5px;
 }
 
 /* Light mode - more visible */
 :root[data-theme='light'] .code-elem {
-  color: rgba(42, 92, 170, 0.18);
-  text-shadow: 0 0 3px rgba(42, 92, 170, 0.15);
+  color: rgba(42, 92, 170, 0.25);
+  text-shadow: 0 0 5px rgba(42, 92, 170, 0.22);
 }
 
 /* Mobile - smaller and fewer */
