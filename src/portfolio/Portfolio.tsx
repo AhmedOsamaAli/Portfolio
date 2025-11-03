@@ -11,6 +11,7 @@ import { ParallaxSections } from './ParallaxSections';
 import { TextReveal } from './TextReveal';
 import { QuickActionMenu } from './QuickActionMenu';
 import { getProjectTheme, getTechIcon } from './projectThemes';
+import { MicrosoftLogo, DFKILogo, GIULogo } from './CompanyLogos';
 
 const accent = {
   title: '#2A5CAA',
@@ -100,7 +101,7 @@ export const Portfolio: React.FC = () => {
                   </ul>
                 </div>
                 {exp.logo && (
-                  exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
+                  exp.company.toLowerCase().includes('microsoft') ? <MicrosoftLogo /> : <DFKILogo />
                 )}
               </div>
             </Card3D>
@@ -121,7 +122,7 @@ export const Portfolio: React.FC = () => {
                   </ul>
                 </div>
                 {exp.logo && (
-                  exp.company.toLowerCase().includes('microsoft') ? <Img asset="microsoft" /> : <Img asset="dfki" />
+                  exp.company.toLowerCase().includes('microsoft') ? <MicrosoftLogo /> : <DFKILogo />
                 )}
               </div>
             </Card3D>
@@ -141,13 +142,7 @@ export const Portfolio: React.FC = () => {
                     {ed.notes && <ul>{ed.notes.map(n => <li key={n}>{n}</li>)}</ul>}
                   </div>
                   {ed.institution.toLowerCase().includes('german international university') && (
-                    // Use import.meta.env.BASE_URL to ensure the asset path works on GitHub Pages subdirectory deployments
-                    <img
-                      src={`${import.meta.env.BASE_URL}Giusquare_trans.png`}
-                      alt="German International University logo"
-                      className="edu-logo-large"
-                      loading="lazy"
-                    />
+                    <GIULogo />
                   )}
                 </div>
               </Card3D>

@@ -1,0 +1,330 @@
+/* Company Logos - Custom styled for both themes */
+
+.company-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  padding: 12px;
+  border-radius: 14px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  perspective: 1000px;
+}
+
+.company-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Microsoft Logo - Four separated colored cubes with 3D effect */
+.microsoft-logo {
+  background: transparent;
+}
+
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 70px;
+  height: 70px;
+  transform-style: preserve-3d;
+}
+
+.ms-square {
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transform-style: preserve-3d;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
+              inset -2px -2px 4px rgba(0, 0, 0, 0.2),
+              inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+  animation: float3dCube 3s ease-in-out infinite;
+}
+
+.ms-square:nth-child(1) { animation-delay: 0s; }
+.ms-square:nth-child(2) { animation-delay: 0.2s; }
+.ms-square:nth-child(3) { animation-delay: 0.4s; }
+.ms-square:nth-child(4) { animation-delay: 0.6s; }
+
+.microsoft-logo:hover .ms-square {
+  transform: translateZ(20px) rotateY(15deg) rotateX(-15deg) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3),
+              inset -3px -3px 6px rgba(0, 0, 0, 0.3),
+              inset 3px 3px 6px rgba(255, 255, 255, 0.4);
+}
+
+.ms-square:nth-child(1):hover { transform: translateZ(30px) rotateY(20deg) rotateX(-20deg) scale(1.1); }
+.ms-square:nth-child(2):hover { transform: translateZ(30px) rotateY(-20deg) rotateX(-20deg) scale(1.1); }
+.ms-square:nth-child(3):hover { transform: translateZ(30px) rotateY(20deg) rotateX(20deg) scale(1.1); }
+.ms-square:nth-child(4):hover { transform: translateZ(30px) rotateY(-20deg) rotateX(20deg) scale(1.1); }
+
+.ms-red { 
+  background: linear-gradient(135deg, #f25022 0%, #e04010 100%);
+}
+.ms-green { 
+  background: linear-gradient(135deg, #7fba00 0%, #6a9c00 100%);
+}
+.ms-blue { 
+  background: linear-gradient(135deg, #00a4ef 0%, #0078d4 100%);
+}
+.ms-yellow { 
+  background: linear-gradient(135deg, #ffb900 0%, #f0a800 100%);
+}
+
+@keyframes float3dCube {
+  0%, 100% { 
+    transform: translateZ(0px) translateY(0px); 
+  }
+  50% { 
+    transform: translateZ(10px) translateY(-5px); 
+  }
+}
+
+/* DFKI Logo - 3D animated text based */
+.dfki-logo {
+  background: transparent;
+  padding: 10px;
+  perspective: 1000px;
+}
+
+.dfki-text {
+  display: flex;
+  gap: 3px;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  transform-style: preserve-3d;
+}
+
+.dfki-letter {
+  background: linear-gradient(135deg, #0066cc, #004499);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 
+    2px 2px 4px rgba(0, 102, 204, 0.3),
+    -1px -1px 2px rgba(0, 102, 204, 0.2);
+  filter: drop-shadow(0 4px 6px rgba(0, 102, 204, 0.4));
+  transition: transform 0.4s ease, filter 0.4s ease;
+  transform-style: preserve-3d;
+  position: relative;
+  animation: letter3dFloat 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+.dfki-letter:nth-child(1) { animation-delay: 0s; }
+.dfki-letter:nth-child(2) { animation-delay: 0.2s; }
+.dfki-letter:nth-child(3) { animation-delay: 0.4s; }
+.dfki-letter:nth-child(4) { animation-delay: 0.6s; }
+
+.dfki-logo:hover .dfki-letter {
+  transform: translateZ(25px) rotateY(15deg) scale(1.1);
+  filter: drop-shadow(0 6px 12px rgba(0, 102, 204, 0.6));
+}
+
+.dfki-letter:hover {
+  transform: translateZ(40px) rotateY(25deg) scale(1.2);
+  filter: drop-shadow(0 8px 16px rgba(0, 102, 204, 0.8));
+}
+
+.dfki-subtitle {
+  font-size: 6px;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 90px;
+  font-weight: 500;
+}
+
+/* Dark theme adjustments for DFKI */
+[data-theme='dark'] .dfki-letter {
+  background: linear-gradient(135deg, #3399ff, #66b3ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 
+    2px 2px 4px rgba(51, 153, 255, 0.3),
+    -1px -1px 2px rgba(51, 153, 255, 0.2);
+  filter: drop-shadow(0 4px 6px rgba(51, 153, 255, 0.5));
+}
+
+[data-theme='dark'] .dfki-logo:hover .dfki-letter,
+[data-theme='dark'] .dfki-letter:hover {
+  filter: drop-shadow(0 6px 12px rgba(51, 153, 255, 0.8));
+}
+
+@keyframes letter3dFloat {
+  0%, 100% { 
+    transform: translateZ(0px) translateY(0px) rotateY(0deg); 
+  }
+  50% { 
+    transform: translateZ(15px) translateY(-3px) rotateY(5deg); 
+  }
+}
+
+/* GIU Logo - 3D animated colored letters */
+.giu-logo {
+  background: transparent;
+  padding: 10px;
+  perspective: 1000px;
+}
+
+.giu-letters {
+  display: flex;
+  gap: 5px;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  transform-style: preserve-3d;
+}
+
+.giu-letter {
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  transform-style: preserve-3d;
+  display: inline-block;
+  animation: letter3dBounce 3s ease-in-out infinite;
+}
+
+.giu-letter:nth-child(1) { animation-delay: 0s; }
+.giu-letter:nth-child(2) { animation-delay: 0.3s; }
+.giu-letter:nth-child(3) { animation-delay: 0.6s; }
+
+.giu-logo:hover .giu-letter {
+  transform: translateZ(25px) rotateY(-15deg) scale(1.15);
+}
+
+.giu-letter:hover {
+  transform: translateZ(40px) rotateY(-25deg) scale(1.25);
+}
+
+.giu-g { 
+  color: #000000;
+  text-shadow: 
+    3px 3px 6px rgba(0, 0, 0, 0.4),
+    -1px -1px 2px rgba(255, 255, 255, 0.5);
+}
+.giu-i { 
+  color: #dc143c;
+  text-shadow: 
+    3px 3px 6px rgba(220, 20, 60, 0.4),
+    -1px -1px 2px rgba(255, 100, 130, 0.5);
+}
+.giu-u { 
+  color: #daa520;
+  text-shadow: 
+    3px 3px 6px rgba(218, 165, 32, 0.4),
+    -1px -1px 2px rgba(255, 215, 100, 0.5);
+}
+
+/* Dark theme adjustments for GIU - G stays black, lighter shadows */
+[data-theme='dark'] .giu-g { 
+  color: #000000;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.5),
+    -1px -1px 2px rgba(255, 255, 255, 0.3);
+}
+[data-theme='dark'] .giu-i { 
+  color: #dc143c;
+  text-shadow: 
+    2px 2px 4px rgba(220, 20, 60, 0.5),
+    -1px -1px 2px rgba(255, 100, 130, 0.4);
+}
+[data-theme='dark'] .giu-u { 
+  color: #daa520;
+  text-shadow: 
+    2px 2px 4px rgba(218, 165, 32, 0.5),
+    -1px -1px 2px rgba(255, 215, 100, 0.4);
+}
+
+[data-theme='dark'] .giu-logo:hover .giu-letter {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+[data-theme='dark'] .giu-g:hover {
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
+}
+
+[data-theme='dark'] .giu-i:hover {
+  filter: drop-shadow(0 6px 10px rgba(220, 20, 60, 0.6));
+}
+
+[data-theme='dark'] .giu-u:hover {
+  filter: drop-shadow(0 6px 10px rgba(218, 165, 32, 0.6));
+}
+
+.giu-subtitle {
+  font-size: 6px;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 90px;
+  font-weight: 500;
+}
+
+@keyframes letter3dBounce {
+  0%, 100% { 
+    transform: translateZ(0px) translateY(0px) rotateX(0deg); 
+  }
+  50% { 
+    transform: translateZ(15px) translateY(-4px) rotateX(10deg); 
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 760px) {
+  .company-logo {
+    width: 70px;
+    height: 70px;
+    padding: 8px;
+  }
+
+  .ms-grid {
+    width: 50px;
+    height: 50px;
+    gap: 6px;
+  }
+
+  .dfki-text {
+    font-size: 20px;
+    gap: 2px;
+  }
+
+  .giu-letters {
+    font-size: 22px;
+    gap: 3px;
+  }
+
+  .dfki-subtitle,
+  .giu-subtitle {
+    font-size: 5px;
+    max-width: 60px;
+  }
+
+  /* Reduce 3D effects on mobile for performance */
+  .ms-square,
+  .dfki-letter,
+  .giu-letter {
+    animation: none;
+  }
+
+  .microsoft-logo:hover .ms-square {
+    transform: translateZ(10px) scale(1.05);
+  }
+
+  .dfki-logo:hover .dfki-letter,
+  .giu-logo:hover .giu-letter {
+    transform: translateZ(10px) scale(1.1);
+  }
+}

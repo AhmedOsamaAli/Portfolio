@@ -1394,16 +1394,8 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   .timeline-point {animation:none;}
 }
 
-/* Education card with large logo */
-.education-card .edu-flex {display:flex;align-items:center;justify-content:space-between;gap:1.25rem;}
-.education-card .edu-info {flex:1;min-width:0;}
-.edu-logo-large {width:110px;height:110px;object-fit:contain;border-radius:14px;background:#ffffff;padding:10px;box-shadow:0 6px 20px -6px rgba(0,0,0,0.35),0 0 0 1px var(--border);}
-@media (max-width:760px){
-  .edu-logo-large {width:70px;height:70px;padding:6px;}
-  .education-card .edu-flex {flex-direction:row;align-items:flex-start;}
-}
-
-/* Experience & Internship cards with company logos on the right */
+/* Education, Experience & Internship cards with company logos on the right */
+.education-card .edu-flex,
 .experience-card .exp-flex,
 .internship-card .exp-flex {
   display: flex;
@@ -1412,49 +1404,15 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   gap: 1.25rem;
 }
 
+.education-card .edu-info,
 .experience-card .exp-info,
 .internship-card .exp-info {
   flex: 1;
   min-width: 0;
 }
 
-/* Company logo styling - matches education logo with theme support */
-.experience-card .exp-flex img,
-.internship-card .exp-flex img {
-  width: 110px;
-  height: 110px;
-  object-fit: contain;
-  border-radius: 14px;
-  background: #ffffff;
-  padding: 10px;
-  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--border);
-  flex-shrink: 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Dark theme support for company logos */
-[data-theme='dark'] .experience-card .exp-flex img,
-[data-theme='dark'] .internship-card .exp-flex img,
-[data-theme='dark'] .edu-logo-large {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
-}
-
-/* Hover effect for company logos */
-.experience-card .exp-flex img:hover,
-.internship-card .exp-flex img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 25px -6px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--accent);
-}
-
 @media (max-width: 760px) {
-  .experience-card .exp-flex img,
-  .internship-card .exp-flex img {
-    width: 70px;
-    height: 70px;
-    padding: 6px;
-  }
-  
+  .education-card .edu-flex,
   .experience-card .exp-flex,
   .internship-card .exp-flex {
     flex-direction: row;
