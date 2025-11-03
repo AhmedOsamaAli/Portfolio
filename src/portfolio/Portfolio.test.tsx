@@ -21,9 +21,16 @@ describe('Portfolio', () => {
     expect(html).toMatch(/alt="Ahmed Osama headshot"/);
   });
 
-  it('includes company logos via Img component', () => {
+  it('includes company logos as custom components', () => {
     const html = renderToString(<Portfolio />);
-    // Microsoft logo should be present in Experience section
-    expect(html).toContain('Microsoft logo');
+    // Check for Microsoft logo (4 colored squares)
+    expect(html).toContain('ms-square ms-red');
+    expect(html).toContain('ms-square ms-blue');
+    // Check for DFKI logo (DFKI letters)
+    expect(html).toContain('dfki-letter');
+    expect(html).toContain('German Research Center for Artificial Intelligence');
+    // Check for GIU logo (GIU letters)
+    expect(html).toContain('giu-letter');
+    expect(html).toContain('German International University');
   });
 });
