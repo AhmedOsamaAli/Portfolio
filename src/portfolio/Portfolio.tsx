@@ -212,32 +212,60 @@ export const Portfolio: React.FC = () => {
         </Section>
         <Section id="contact" title="Contact">
           <div className="contact-links" aria-label="Contact links">
-            <p className="contact-intro">Let's build something great together. Reach out via any channel below:</p>
+            <motion.p 
+              className="contact-intro"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              Let's build something great together. Reach out via any channel below:
+            </motion.p>
             <ul className="contact-list">
-              <li>
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+              >
                 <a href="tel:+201223729895" className="contact-link" aria-label="Call Ahmed" title="+20 122 372 9895">
                   <span className="icon" aria-hidden="true">📱</span>
                   <span>Phone</span>
                 </a>
-              </li>
-              <li>
+              </motion.li>
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
                 <a href="mailto:ahmedosamadiab@gmail.com" className="contact-link" aria-label="Email Ahmed">
                   <span className="icon" aria-hidden="true">📧</span>
                   <span>Email</span>
                 </a>
-              </li>
-              <li>
+              </motion.li>
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
                 <a href="https://www.linkedin.com/in/ahmedosamadiab/" target="_blank" rel="noreferrer" className="contact-link" aria-label="LinkedIn profile">
                   <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11.02 5.001A2.5 2.5 0 014.98 3.5zM3 9h4v12H3zM9.5 9h3.8l.2 1.7c.8-1.3 2.1-2 3.9-2 3 0 4.6 2 4.6 5.4V21h-4v-6.2c0-1.7-.6-2.7-2-2.7-1.5 0-2.3 1-2.3 2.7V21h-4V9z"/></svg>
                   <span>LinkedIn</span>
                 </a>
-              </li>
-              <li>
+              </motion.li>
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
                 <a href="https://github.com/AhmedOsamaAli" target="_blank" rel="noreferrer" className="contact-link" aria-label="GitHub profile">
                   <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.41 7.86 10.94.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.26 3.4.96.11-.76.41-1.26.74-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 012.9-.39c.99 0 1.99.13 2.9.39 2.2-1.5 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.42.37.79 1.1.79 2.22 0 1.6-.02 2.88-.02 3.27 0 .31.21.68.8.56A10.52 10.52 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
                   <span>GitHub</span>
                 </a>
-              </li>
+              </motion.li>
             </ul>
           </div>
         </Section>
