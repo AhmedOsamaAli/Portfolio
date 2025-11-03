@@ -4,6 +4,7 @@ import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import './portfolio.css';
 import { Img } from './assets';
 import ParticlesBackground from './ParticlesBackground';
+import { ICPCLogo, EOILogo, HackerCupLogo } from './CompanyLogos';
 import { Card3D } from './Card3D';
 import CursorTrail from './CursorTrail';
 import { RippleEffect } from './RippleEffect';
@@ -189,23 +190,36 @@ export const Portfolio: React.FC = () => {
           </div>
         </Section>
         <Section id="achievements" title="Achievements">
-          {achievements.map(a => (
-            <div key={a.title} className="card achievement">
-              <header>
-                <h3 className="achievement-title">
-                  {a.icon && (
-                    <span className="achievement-icon" aria-hidden="true">{a.icon}</span>
-                  )}
-                  <span className="achievement-text">{a.title}</span>
-                  {a.icon && (
-                    <span className="sr-only"> icon {a.icon}</span>
-                  )}
-                </h3>
-              </header>
-              <p>{a.description}</p>
-              {a.links && <p className="links">{a.links.map(l => <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>)}</p>}
-            </div>
-          ))}
+          {achievements.map(a => {
+            // Get the appropriate logo component based on achievement title
+            let LogoComponent = null;
+            if (a.title.includes('ICPC')) {
+              LogoComponent = ICPCLogo;
+            } else if (a.title.includes('EOI')) {
+              LogoComponent = EOILogo;
+            } else if (a.title.includes('HackerCup')) {
+              LogoComponent = HackerCupLogo;
+            }
+
+            return (
+              <div key={a.title} className="card achievement achievement-with-logo">
+                <div className="achievement-content-wrapper">
+                  <div className="achievement-logo-section">
+                    {LogoComponent ? <LogoComponent /> : (
+                      a.icon && <span className="achievement-icon" aria-hidden="true">{a.icon}</span>
+                    )}
+                  </div>
+                  <div className="achievement-text-section">
+                    <header>
+                      <h3 className="achievement-title-simple">{a.title}</h3>
+                    </header>
+                    <p>{a.description}</p>
+                    {a.links && <p className="links">{a.links.map(l => <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>)}</p>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </Section>
         <Section id="projects" title="Projects">
               <ProjectTimeline />

@@ -26,6 +26,7 @@ export interface AchievementItem {
   description: string;
   links?: { label: string; url: string }[];
   icon?: string; // optional emoji or short text identifier displayed beside achievement
+  image?: string; // optional background image for the achievement card
 }
 export interface ProjectItem {
   name: string;
@@ -107,12 +108,14 @@ export const achievements: AchievementItem[] = [
       { label: 'Ranking', url: 'https://drive.google.com/file/d/163BQmaXHslNyzkawH-5rsHrKFUDAnRV3/view?usp=sharing' },
       { label: 'ICPCID', url: 'https://icpc.global/ICPCID/V6C8EA1AECZP' }
     ],
-    icon: '🏆'
+    icon: '🏆',
+    image: '/icpc.png'
   },
   {
     title: 'EOI Bronze Medalist',
     description: 'Bronze medal in Egyptian Olympiad in Informatics (EOI) 2020.',
-    icon: '🥉'
+    icon: '🥉',
+    image: '/eoi.jpg'
   },
   {
     title: 'Meta HackerCup 2023',
@@ -120,7 +123,8 @@ export const achievements: AchievementItem[] = [
     links: [
       { label: 'Certificate', url: 'https://drive.google.com/file/d/1QA3Rj7jMKdaYa92UbysGawWmfGp4uDn_/view' }
     ],
-    icon: '⚡'
+    icon: '⚡',
+    image: '/hackercup.png'
   }
 ];
 

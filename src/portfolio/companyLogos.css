@@ -328,3 +328,270 @@
     transform: translateZ(10px) scale(1.1);
   }
 }
+
+/* ========== ACHIEVEMENT LOGOS ========== */
+
+/* ICPC Logo - Blue, Yellow, Red, Blue */
+.icpc-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.icpc-letters {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.icpc-letter {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: letter3dFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.icpc-i {
+  color: #0066cc;
+  background: linear-gradient(135deg, #0066cc, #0088ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 102, 204, 0.3);
+  animation-delay: 0s;
+}
+
+.icpc-c {
+  color: #ffd700;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(255, 215, 0, 0.3);
+  animation-delay: 0.2s;
+}
+
+.icpc-p {
+  color: #dc143c;
+  background: linear-gradient(135deg, #dc143c, #ff4d6d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(220, 20, 60, 0.3);
+  animation-delay: 0.4s;
+}
+
+.icpc-c2 {
+  color: #0066cc;
+  background: linear-gradient(135deg, #0066cc, #0088ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 102, 204, 0.3);
+  animation-delay: 0.6s;
+}
+
+.icpc-logo:hover .icpc-letter {
+  animation: letter3dBounce 0.6s ease-in-out;
+  transform: translateZ(20px) scale(1.2);
+}
+
+.icpc-subtitle {
+  font-size: 6px;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 90px;
+  font-weight: 500;
+}
+
+/* EOI Logo - Black, Yellow, Black */
+.eoi-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.eoi-letters {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.eoi-letter {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: letter3dFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.eoi-e {
+  color: #000000;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.4),
+    -1px -1px 2px rgba(255, 255, 255, 0.3);
+  animation-delay: 0s;
+}
+
+.eoi-o {
+  color: #daa520;
+  background: linear-gradient(135deg, #daa520, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(218, 165, 32, 0.3);
+  animation-delay: 0.2s;
+}
+
+.eoi-i {
+  color: #000000;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.4),
+    -1px -1px 2px rgba(255, 255, 255, 0.3);
+  animation-delay: 0.4s;
+}
+
+/* Dark theme adjustments for EOI */
+[data-theme='dark'] .eoi-e,
+[data-theme='dark'] .eoi-i {
+  color: #000000;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.5),
+    -1px -1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.eoi-logo:hover .eoi-letter {
+  animation: letter3dBounce 0.6s ease-in-out;
+  transform: translateZ(20px) scale(1.2);
+}
+
+.eoi-subtitle {
+  font-size: 6px;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 90px;
+  font-weight: 500;
+}
+
+/* HackerCup Logo - HACKER (Meta Blue), CUP (Dark Yellow), separated */
+.hackercup-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hackercup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.hackercup-word {
+  display: flex;
+  gap: 4px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.hacker-word {
+  font-size: 20px;
+}
+
+.cup-word {
+  font-size: 24px;
+}
+
+.hacker-letter {
+  display: inline-block;
+  color: #0081fb;
+  background: linear-gradient(135deg, #0081fb, #00a6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 129, 251, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: letter3dFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 129, 251, 0.3));
+}
+
+.cup-letter {
+  display: inline-block;
+  color: #b8860b;
+  background: linear-gradient(135deg, #b8860b, #daa520);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(184, 134, 11, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: letter3dFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(184, 134, 11, 0.3));
+}
+
+.hacker-letter:nth-child(1) { animation-delay: 0s; }
+.hacker-letter:nth-child(2) { animation-delay: 0.1s; }
+.hacker-letter:nth-child(3) { animation-delay: 0.2s; }
+.hacker-letter:nth-child(4) { animation-delay: 0.3s; }
+.hacker-letter:nth-child(5) { animation-delay: 0.4s; }
+.hacker-letter:nth-child(6) { animation-delay: 0.5s; }
+
+.cup-letter:nth-child(1) { animation-delay: 0.6s; }
+.cup-letter:nth-child(2) { animation-delay: 0.7s; }
+.cup-letter:nth-child(3) { animation-delay: 0.8s; }
+
+.hackercup-logo:hover .hacker-letter,
+.hackercup-logo:hover .cup-letter {
+  animation: letter3dBounce 0.6s ease-in-out;
+  transform: translateZ(20px) scale(1.15);
+}
+
+.hackercup-subtitle {
+  font-size: 6px;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 90px;
+  font-weight: 500;
+}
+
+/* Mobile responsive for achievement logos */
+@media (max-width: 760px) {
+  .icpc-letters,
+  .eoi-letters {
+    font-size: 22px;
+    gap: 6px;
+  }
+
+  .hacker-word {
+    font-size: 16px;
+  }
+
+  .cup-word {
+    font-size: 20px;
+  }
+
+  .icpc-letter,
+  .eoi-letter,
+  .hacker-letter,
+  .cup-letter {
+    animation: none;
+  }
+
+  .icpc-logo:hover .icpc-letter,
+  .eoi-logo:hover .eoi-letter,
+  .hackercup-logo:hover .hacker-letter,
+  .hackercup-logo:hover .cup-letter {
+    transform: translateZ(10px) scale(1.1);
+  }
+}
