@@ -49,31 +49,84 @@ const Section: React.FC<{ id: string; title: string; children: React.ReactNode }
 
 // GitHub highlights removed per user request.
 
+// Hook to coordinate initial readiness (fonts, headshot image, idle) with a max timeout fallback.
+function useInitialReadiness(headshotSelector: string, minMs = 3000, maxMs = 5000) {
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return; // SSR safety
+    let cancelled = false;
+    const promises: Promise<any>[] = [];
+    // Fonts
+    if ((document as any).fonts && (document as any).fonts.ready) {
+      promises.push((document as any).fonts.ready.catch(() => {}));
+    }
+    // Headshot image
+    const headshotEl = document.querySelector(headshotSelector) as HTMLImageElement | null;
+    if (headshotEl && !headshotEl.complete) {
+      promises.push(new Promise(res => {
+        const timeout = setTimeout(res, 1800);
+        headshotEl.addEventListener('load', () => { clearTimeout(timeout); res(null); }, { once: true });
+        headshotEl.addEventListener('error', () => { clearTimeout(timeout); res(null); }, { once: true });
+      }));
+    }
+    // A few early images (logos etc.) cap to first 8
+    const earlyImgs = Array.from(document.querySelectorAll('main img')).slice(0, 8) as HTMLImageElement[];
+    earlyImgs.forEach(img => {
+      if (!img.complete) {
+        promises.push(new Promise(res => {
+          const timeout = setTimeout(res, 1600);
+          img.addEventListener('load', () => { clearTimeout(timeout); res(null); }, { once: true });
+          img.addEventListener('error', () => { clearTimeout(timeout); res(null); }, { once: true });
+        }));
+      }
+    });
+    // Idle callback
+    promises.push(new Promise(res => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => res(null), { timeout: 1000 });
+      } else {
+        setTimeout(res, 300);
+      }
+    }));
+    const assets = Promise.all(promises).catch(() => {});
+    const minTimer = new Promise(res => setTimeout(res, minMs));
+    const maxTimer = new Promise(res => setTimeout(res, maxMs));
+    Promise.race([Promise.all([assets, minTimer]), maxTimer]).then(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => { cancelled = true; };
+  }, [headshotSelector, minMs, maxMs]);
+  return ready;
+}
+
 export const Portfolio: React.FC = () => {
-  const [showSplash, setShowSplash] = React.useState<boolean>(() => {
-    // Do not show splash during SSR (tests) to keep deterministic output
-    if (typeof window === 'undefined') return false;
-    return true;
-  });
-  
+  const showSplashInitially = typeof window !== 'undefined';
+  const [showSplash, setShowSplash] = React.useState(showSplashInitially);
+  const initialReady = useInitialReadiness('img[alt="headshot"]', 3000, 5000);
+
   // Force scroll to top on mount/refresh
   React.useEffect(() => {
+    if (typeof window === 'undefined') return;
     window.scrollTo(0, 0);
-    // Prevent browser from restoring scroll position
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
-  
+
+  // Hide splash when readiness achieved (with small fade buffer)
   React.useEffect(() => {
     if (!showSplash) return;
-    // Optimal timing: 3.5s total (1s typing + 2s read time + 0.5s fade)
-    const t = setTimeout(() => setShowSplash(false), 3500);
-    return () => clearTimeout(t);
-  }, [showSplash]);
+    if (initialReady) {
+      // Start fade immediately, allow CSS animation to finish before visibility reveal
+      const root = document.querySelector('.splash');
+      if (root) root.classList.add('splash-hide');
+      const t = setTimeout(() => setShowSplash(false), 480); // match fade duration
+      return () => clearTimeout(t);
+    }
+  }, [initialReady, showSplash]);
   return (
     <div className="app">
-      {showSplash && <SplashScreen />}
+      {showSplash && <SplashScreen minMs={3000} />}
       {/* Hide main content until splash is done */}
       <div style={{ visibility: showSplash ? 'hidden' : 'visible' }}>
       <ScrollProgress />
@@ -150,37 +203,7 @@ export const Portfolio: React.FC = () => {
             ))}
         </Section>
         <Section id="skills" title="Skills">
-          <div className="skills-stacked">
-            {Object.entries(skills).map(([category, items], catIdx) => (
-              <motion.div
-                key={category}
-                className="skill-category-enhanced"
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: catIdx * 0.05, duration: 0.55 }}
-              >
-                <h3 className="skill-category-title">{category}</h3>
-                <div className="skill-items-row wrap">
-                  {items.map((skill: SkillItem, idx: number) => (
-                    <motion.div
-                      key={skill.name}
-                      className="skill-item-3d"
-                      style={{ '--skill-color': skill.color } as React.CSSProperties}
-                      initial={{ opacity: 0, scale: 0.85 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.015, duration: 0.3 }}
-                      whileHover={{ scale: 1.08, y: -5, rotateY: 6 }}
-                    >
-                      <span className="skill-icon-3d">{skill.icon}</span>
-                      <span className="skill-name-3d">{skill.name}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <SkillsSection />
         </Section>
         <Section id="achievements" title="Achievements">
           {achievements.map(a => {
@@ -595,8 +618,8 @@ const FloatingIcons: React.FC = () => {
 
 export default Portfolio;
 
-// Timed splash screen with dark theme variant
-const SplashScreen: React.FC = () => {
+// Timed splash screen with dark theme variant (fade out handled externally via readiness hook)
+const SplashScreen: React.FC<{ minMs?: number }> = ({ minMs = 3000 }) => {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const [darkTheme, setDarkTheme] = React.useState(false);
   React.useEffect(() => {
@@ -613,12 +636,7 @@ const SplashScreen: React.FC = () => {
   const [subChars, setSubChars] = React.useState(0);
   const [taglineChars, setTaglineChars] = React.useState(0);
   const [showContent, setShowContent] = React.useState(false);
-  
-  React.useEffect(() => {
-    // Initial entry animation
-    setTimeout(() => setShowContent(true), 100);
-  }, []);
-  
+  React.useEffect(() => { setTimeout(() => setShowContent(true), 60); }, []);
   React.useEffect(() => {
     if (prefersReduced) {
       setTitleChars(fullTitle.length);
@@ -626,65 +644,52 @@ const SplashScreen: React.FC = () => {
       setTaglineChars(tagline.length);
       return;
     }
+    // Scale typing durations to consume ~60% of minMs (capped) for a smoother paced intro
+    const typingBudget = Math.min(minMs * 0.6, 2400);
+    const titleDuration = typingBudget * 0.40;
+    const subDuration = typingBudget * 0.30;
+    const taglineDuration = typingBudget * 0.30;
+    const totalTyping = titleDuration + subDuration + taglineDuration;
     const start = performance.now();
-    const titleDuration = 600;
-    const subDuration = 500;
-    const taglineDuration = 600;
-    const typingTotal = titleDuration + subDuration + taglineDuration;
-    const totalVisible = 3500;
-    const tick = (now: number) => {
+    const step = (now: number) => {
       const elapsed = now - start;
       if (elapsed < titleDuration) {
-        const ratio = elapsed / titleDuration;
-        setTitleChars(Math.min(fullTitle.length, Math.floor(ratio * fullTitle.length)));
+        setTitleChars(Math.min(fullTitle.length, Math.floor((elapsed / titleDuration) * fullTitle.length)));
       } else if (elapsed < titleDuration + subDuration) {
         setTitleChars(fullTitle.length);
         const subElapsed = elapsed - titleDuration;
-        const subRatio = subElapsed / subDuration;
-        setSubChars(Math.min(fullSub.length, Math.floor(subRatio * fullSub.length)));
-      } else if (elapsed < typingTotal) {
+        setSubChars(Math.min(fullSub.length, Math.floor((subElapsed / subDuration) * fullSub.length)));
+      } else if (elapsed < totalTyping) {
         setTitleChars(fullTitle.length);
         setSubChars(fullSub.length);
-        const taglineElapsed = elapsed - titleDuration - subDuration;
-        const taglineRatio = taglineElapsed / taglineDuration;
-        setTaglineChars(Math.min(tagline.length, Math.floor(taglineRatio * tagline.length)));
+        const tagElapsed = elapsed - titleDuration - subDuration;
+        setTaglineChars(Math.min(tagline.length, Math.floor((tagElapsed / taglineDuration) * tagline.length)));
       } else {
         setTitleChars(fullTitle.length);
         setSubChars(fullSub.length);
         setTaglineChars(tagline.length);
       }
-      
-      if (elapsed < typingTotal) {
-        requestAnimationFrame(tick);
-      } else {
-        setTitleChars(fullTitle.length);
-        setSubChars(fullSub.length);
-        setTaglineChars(tagline.length);
-        const fadeStart = totalVisible - 500;
-        setTimeout(() => {
-          const root = document.querySelector('.splash');
-          if (root) root.classList.add('splash-hide');
-        }, fadeStart - elapsed);
+      if (elapsed < totalTyping) {
+        requestAnimationFrame(step);
       }
     };
-    const raf = requestAnimationFrame(tick);
+    const raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [prefersReduced, fullSub, tagline]);
-  
+  }, [prefersReduced, fullSub, tagline, minMs, fullTitle]);
   return (
     <div className={`splash ${darkTheme ? 'dark-splash' : ''} ${showContent ? 'splash-visible' : ''}`} role="status" aria-label="Intro splash">
-      <div className="splash-bg-orb splash-orb-1"></div>
-      <div className="splash-bg-orb splash-orb-2"></div>
-      <div className="splash-bg-orb splash-orb-3"></div>
+      <div className="splash-bg-orb splash-orb-1" />
+      <div className="splash-bg-orb splash-orb-2" />
+      <div className="splash-bg-orb splash-orb-3" />
       <div className="splash-inner">
         <div className="splash-logo">
-          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="30" cy="30" r="28" stroke="url(#gradient)" strokeWidth="2" className="splash-logo-circle"/>
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+            <circle cx="30" cy="30" r="28" stroke="url(#gradient)" strokeWidth="2" className="splash-logo-circle" />
             <text x="30" y="40" textAnchor="middle" fill="url(#gradient)" fontSize="28" fontWeight="bold" className="splash-logo-text">AO</text>
             <defs>
               <linearGradient id="gradient" x1="0" y1="0" x2="60" y2="60">
-                <stop offset="0%" stopColor="#2A5CAA"/>
-                <stop offset="100%" stopColor="#5B8FCC"/>
+                <stop offset="0%" stopColor="#2A5CAA" />
+                <stop offset="100%" stopColor="#5B8FCC" />
               </linearGradient>
             </defs>
           </svg>
@@ -701,20 +706,17 @@ const SplashScreen: React.FC = () => {
           {tagline.slice(0, taglineChars)}
           {!prefersReduced && taglineChars < tagline.length && <span className="caret" aria-hidden="true">|</span>}
         </p>
-        <div className="splash-loader">
-          <div className="splash-loader-bar"></div>
+        <div className="splash-loader" aria-label="Loading assets">
+          <div className="splash-loader-bar" />
         </div>
       </div>
     </div>
   );
 };
 
-// Humorous rotating coding tagline
+// Humorous rotating coding tagline (independent component)
 const RotatingTagline: React.FC = () => {
   const phrases = [
-    'console.log("Hello, world ✨")',
-    'while (coffee) { code(); }',
-    'git commit -m "Make it faster"',
     'docker ps | grep inspiration',
     'const bug = feature?.notYet()',
     'npm run refactor --silent',
@@ -722,35 +724,33 @@ const RotatingTagline: React.FC = () => {
   ];
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const [index, setIndex] = React.useState(0);
-  const [display, setDisplay] = React.useState('');
+  const [text, setText] = React.useState('');
   const [deleting, setDeleting] = React.useState(false);
   React.useEffect(() => {
-    if (prefersReduced) return; // show static first phrase
+    if (prefersReduced) return;
     const full = phrases[index];
-    const speed = deleting ? 24 : 42; // typing vs deleting speed
-    const timeout = setTimeout(() => {
+    const speed = deleting ? 26 : 44;
+    const t = setTimeout(() => {
       if (!deleting) {
-        // typing
-        const nextLen = display.length + 1;
-        setDisplay(full.slice(0, nextLen));
+        const nextLen = text.length + 1;
+        setText(full.slice(0, nextLen));
         if (nextLen === full.length) {
-          // pause then start deleting
-          setTimeout(() => setDeleting(true), 900);
+          setTimeout(() => setDeleting(true), 850);
         }
       } else {
-        const nextLen = display.length - 1;
-        setDisplay(full.slice(0, nextLen));
+        const nextLen = text.length - 1;
+        setText(full.slice(0, nextLen));
         if (nextLen === 0) {
           setDeleting(false);
           setIndex(i => (i + 1) % phrases.length);
         }
       }
     }, speed);
-    return () => clearTimeout(timeout);
-  }, [display, deleting, index, prefersReduced]);
+    return () => clearTimeout(t);
+  }, [text, deleting, index, prefersReduced]);
   return (
     <div className="rotating-tagline" aria-live="polite">
-      <code>{prefersReduced ? phrases[0] : display}<span className="rt-caret" aria-hidden="true">|</span></code>
+      <code>{prefersReduced ? phrases[0] : text}<span className="rt-caret" aria-hidden="true">|</span></code>
     </div>
   );
 };
@@ -817,3 +817,45 @@ const XPBadge: React.FC = () => {
     </div>
   );
 };
+
+// Memoized skills section (performance optimized)
+const SkillsSection: React.FC = React.memo(() => {
+  const categories = React.useMemo(() => Object.entries(skills) as [string, SkillItem[]][], []);
+  // Intersection observer to reveal category blocks
+  React.useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    document.querySelectorAll('.skill-category-enhanced').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div className="skills-stacked" data-perf="optimized">
+      {categories.map(([category, items]) => (
+        <div key={category} className="skill-category-enhanced reveal-on-scroll">
+          <h3 className="skill-category-title">{category}</h3>
+          <div className="skill-items-row wrap">
+            {items.map(skill => (
+              <div
+                key={skill.name}
+                className="skill-item-3d"
+                data-color={skill.color}
+                style={{ '--skill-color': skill.color } as React.CSSProperties}
+                tabIndex={0}
+              >
+                <span className="skill-icon-3d" aria-hidden="true">{skill.icon}</span>
+                <span className="skill-name-3d">{skill.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+});
+

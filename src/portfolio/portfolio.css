@@ -587,16 +587,35 @@ main {width:100%;max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem;flex:1;}
   background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 16px;
-  backdrop-filter: blur(10px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(6px); /* reduced blur for cheaper paint */
+  /* Performance tuning: limit transitions & enable containment */
+  will-change: transform, opacity;
+  contain: layout style paint;
+  opacity: 0; /* start hidden, revealed via observer */
+  transform: translateY(12px);
+  transition:
+    background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.45s ease-out;
 }
 
 .skill-category:hover {
   background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
   border-color: rgba(255,255,255,0.2);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px -8px rgba(0,0,0,0.3);
+  transform: translateY(-2px); /* slightly smaller lift to reduce repaint scope */
+  box-shadow: 0 10px 32px -12px rgba(0,0,0,0.32);
 }
+
+/* Revealed state applied by IntersectionObserver (see SkillsSection) */
+.skill-category.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Disable initial keyframe animation for skills (use cheap transition instead) */
+.skills-grid .skill-category { animation: none !important; }
 
 .skill-category h3 {
   margin-bottom: 1rem;
