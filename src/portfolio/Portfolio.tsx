@@ -77,40 +77,19 @@ const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
 const SectionRail: React.FC = () => {
   const [active, setActive] = React.useState<string>('experience');
   React.useEffect(() => {
-    let currentSection = 'experience';
-    const updateActiveSection = () => {
-      const viewportCenter = window.scrollY + window.innerHeight / 3;
-      const isAtBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
-      if (isAtBottom) {
-        currentSection = 'contact';
-        setActive('contact');
-        return;
-      }
-      for (const meta of sectionMeta) {
-        const el = document.getElementById(meta.id);
-        if (!el) continue;
-        const top = el.offsetTop;
-        const bottom = top + el.offsetHeight;
-        if (viewportCenter >= top && viewportCenter < bottom) {
-          if (currentSection !== meta.id) {
-            currentSection = meta.id;
-            setActive(meta.id);
-          }
-          break;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+            if (id) setActive(id);
         }
-      }
-    };
-    let rafId: number;
-    const onScroll = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updateActiveSection);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    updateActiveSection();
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
+      });
+    }, { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    sectionMeta.forEach(meta => {
+      const el = document.getElementById(meta.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
   }, []);
   return (
     <nav className="section-rail" aria-label="Section navigation">
