@@ -506,21 +506,44 @@ const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
 const SectionRail: React.FC = () => {
   const [active, setActive] = React.useState<string>('experience');
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '0px 0px -60% 0px', threshold: 0.2 }
-    );
-    sectionMeta.forEach(meta => {
-      const el = document.getElementById(meta.id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
+    const handleScroll = () => {
+      const sections = sectionMeta.map(meta => {
+        const el = document.getElementById(meta.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          return { id: meta.id, top: rect.top, bottom: rect.bottom, element: el };
+        }
+        return null;
+      }).filter(Boolean);
+
+      // Check if we're near the bottom of the page
+      const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+      
+      if (nearBottom) {
+        setActive('contact');
+        return;
+      }
+
+      // Find the section that's currently most visible
+      for (const section of sections) {
+        if (section && section.top <= window.innerHeight / 2 && section.bottom > window.innerHeight / 2) {
+          setActive(section.id);
+          return;
+        }
+      }
+
+      // Fallback: find the first section in viewport
+      for (const section of sections) {
+        if (section && section.top < window.innerHeight && section.bottom > 0) {
+          setActive(section.id);
+          return;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   return (
     <nav className="section-rail" aria-label="Section navigation">
