@@ -1,0 +1,329 @@
+/* ===== SNAKE PORTFOLIO GAME ===== */
+
+.sg-root {
+  position: fixed;
+  inset: 0;
+  background: #050a12;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+.sg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+/* ── HUD ─────────────────────────────────────────────────────────────────── */
+.sg-hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Gem sidebar – fixed left column, always above all overlays */
+.sg-progress {
+  position: fixed;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 65;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  background: rgba(5,10,22,0.82);
+  border: 1px solid rgba(100,180,255,0.18);
+  border-radius: 16px;
+  padding: 14px 12px;
+  backdrop-filter: blur(16px);
+  pointer-events: all;
+  box-shadow: 0 0 24px rgba(26,110,255,0.1);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sg-progress::-webkit-scrollbar { display: none; }
+.sg-progress-label {
+  font-size: 11px;
+  color: rgba(100,180,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.sg-progress-label strong {
+  color: #64b4ff;
+  font-weight: 700;
+}
+
+/* Gem chips – vertical stack */
+.sg-gem-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sg-gem-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(100,180,255,0.12);
+  background: rgba(100,180,255,0.04);
+  cursor: default;
+  opacity: 0.28;
+  filter: grayscale(1);
+  transition: all 0.32s;
+  user-select: none;
+  white-space: nowrap;
+}
+.sg-gem-chip.collected {
+  opacity: 1;
+  filter: none;
+  cursor: pointer;
+  background: rgba(100,180,255,0.07);
+  box-shadow: 0 0 10px var(--chip-color, rgba(100,180,255,0.3));
+}
+.sg-gem-chip.collected:hover {
+  transform: translateX(3px) scale(1.04);
+  box-shadow: 0 4px 18px var(--chip-color, rgba(100,180,255,0.4));
+}
+.sg-gem-chip-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+.sg-gem-chip-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(200,230,255,0.75);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+/* Exit button */
+.sg-exit {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  pointer-events: all;
+  font-size: 11px;
+  color: rgba(100,180,255,0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: rgba(5,10,22,0.78);
+  border: 1px solid rgba(100,180,255,0.18);
+  border-radius: 20px;
+  padding: 8px 16px;
+  backdrop-filter: blur(14px);
+  transition: all 0.2s;
+}
+.sg-exit:hover {
+  color: #64b4ff;
+  border-color: rgba(100,180,255,0.4);
+  box-shadow: 0 0 16px rgba(26,110,255,0.15);
+}
+
+/* Hint */
+.sg-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(100,180,255,0.28);
+  letter-spacing: 0.06em;
+  text-align: center;
+  pointer-events: none;
+  animation: sgFadeOut 5s ease-out forwards;
+}
+@keyframes sgFadeOut {
+  0%, 60% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+/* ── Modal overlay ───────────────────────────────────────────────────────── */
+.sg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2,5,12,0.7);
+  backdrop-filter: blur(4px);
+}
+
+.sg-modal {
+  width: min(760px, 92vw);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: rgba(4,9,20,0.96);
+  border: 1px solid rgba(100,180,255,0.2);
+  border-top: 2px solid var(--gem-color, #64b4ff);
+  border-radius: 20px;
+  backdrop-filter: blur(30px);
+  padding: 34px 40px 38px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,180,255,0.25) transparent;
+  box-shadow:
+    0 0 0 1px rgba(100,180,255,0.06),
+    0 0 80px rgba(26,110,255,0.12),
+    0 0 160px rgba(26,110,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  position: relative;
+}
+.sg-modal::-webkit-scrollbar { width: 4px; }
+.sg-modal::-webkit-scrollbar-track { background: transparent; }
+.sg-modal::-webkit-scrollbar-thumb {
+  background: rgba(100,180,255,0.22);
+  border-radius: 2px;
+}
+
+.sg-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(100,180,255,0.1);
+}
+.sg-modal-icon {
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(0 0 14px var(--gem-color, #64b4ff));
+}
+.sg-modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.sg-modal-sub {
+  font-size: 12px;
+  color: rgba(100,180,255,0.45);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.sg-modal-close {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(100,180,255,0.22);
+  background: rgba(100,180,255,0.06);
+  color: rgba(100,180,255,0.6);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.sg-modal-close:hover {
+  background: rgba(100,180,255,0.14);
+  color: #fff;
+  border-color: rgba(100,180,255,0.5);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sg-overlay {
+    align-items: flex-end;
+  }
+  .sg-modal {
+    width: 100%;
+    max-height: 72vh;
+    border-radius: 20px 20px 0 0;
+    padding: 22px 18px 28px;
+  }
+  .sg-progress { left: 8px; padding: 10px 8px; max-height: calc(100vh - 60px); }
+  .sg-hint     { bottom: 24px; }
+  .sg-exit     { top: 16px; right: 14px; padding: 7px 12px; }
+  .sg-gem-chip { padding: 4px 8px; }
+  .sg-gem-chip-icon { font-size: 13px; }
+  .sg-gem-chip-label { font-size: 9px; }
+}
+
+/* ── Victory screen ────────────────────────────────────────────────────────── */
+.sg-victory {
+  position: fixed;
+  inset: 0;
+  z-index: 80;                         /* above modal(50), sidebar(65), play-again(70) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2,5,14,0.86);       /* full-screen backdrop */
+  backdrop-filter: blur(8px);
+  pointer-events: all;                 /* block clicks on anything behind */
+}
+.sg-victory-card {
+  pointer-events: all;
+  text-align: center;
+  padding: 36px 52px 40px;
+  background: rgba(4,9,22,0.88);
+  border: 1px solid rgba(100,180,255,0.28);
+  border-radius: 28px;
+  box-shadow:
+    0 0 80px rgba(100,180,255,0.14),
+    0 0 160px rgba(26,110,255,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  backdrop-filter: blur(10px);
+}
+.sg-victory-trophy {
+  font-size: 72px;
+  margin-bottom: 18px;
+  display: block;
+  filter: drop-shadow(0 0 28px #ffaa22);
+  animation: victoryBob 1.5s ease-in-out infinite;
+}
+@keyframes victoryBob {
+  0%, 100% { transform: translateY(0) scale(1);      }
+  50%      { transform: translateY(-9px) scale(1.1); }
+}
+.sg-victory-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, #64b4ff 55%, #ffaa22 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sg-victory-sub {
+  font-size: 13px;
+  color: rgba(100,180,255,0.5);
+  letter-spacing: 0.05em;
+  margin-bottom: 0;
+}
+
+/* Play Again pill — bottom-center, appears after victory card fades */
+.sg-play-again {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 75;
+  padding: 12px 28px;
+  border-radius: 26px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, #1a6eff, #64b4ff);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 22px rgba(26,110,255,0.45);
+  transition: box-shadow 0.22s;
+  white-space: nowrap;
+}
+.sg-play-again:hover {
+  box-shadow: 0 6px 30px rgba(26,110,255,0.65);
+  transform: translateX(-50%) translateY(-2px);
+}

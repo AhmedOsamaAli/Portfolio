@@ -1,0 +1,149 @@
+/* ===== Gem content panel styles ===== */
+
+/* Cards */
+.tw-card {
+  background: rgba(100,180,255,0.04);
+  border: 1px solid rgba(100,180,255,0.1);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.tw-card:hover { border-color: rgba(100,180,255,0.28); box-shadow: 0 0 24px rgba(26,110,255,0.1); }
+.tw-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-accent, linear-gradient(90deg, #1a6eff, #64b4ff));
+  opacity: 0.6;
+}
+.tw-card-title { font-size: 16px; font-weight: 600; color: #e0eeff; margin-bottom: 4px; }
+.tw-card-meta { font-size: 12px; color: rgba(100,180,255,0.5); margin-bottom: 10px; letter-spacing: 0.04em; }
+.tw-card-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.tw-card-bullets li {
+  font-size: 13px; color: rgba(200,220,255,0.72); padding-left: 16px; position: relative; line-height: 1.5;
+}
+.tw-card-bullets li::before { content: '▸'; position: absolute; left: 0; color: #1a6eff; }
+
+/* Skill chips */
+.tw-skills-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.tw-skill-chip {
+  display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+  border-radius: 20px; border: 1px solid rgba(100,180,255,0.18);
+  background: rgba(100,180,255,0.04); font-size: 12px; color: #c8e0ff;
+  transition: all 0.25s; cursor: default;
+}
+.tw-skill-chip:hover {
+  border-color: rgba(100,180,255,0.45); background: rgba(100,180,255,0.09);
+  transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26,110,255,0.15);
+}
+.tw-skill-level { display: flex; gap: 2px; }
+.tw-skill-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(100,180,255,0.2); }
+.tw-skill-dot.filled { background: #64b4ff; }
+
+/* Achievements */
+.tw-achievement {
+  display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px;
+  border-radius: 14px; border: 1px solid rgba(100,180,255,0.1);
+  background: rgba(100,180,255,0.03); margin-bottom: 14px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.tw-achievement:hover { border-color: rgba(100,180,255,0.28); transform: translateX(4px); }
+.tw-achievement-icon { font-size: 28px; }
+.tw-achievement-title { font-size: 15px; font-weight: 600; color: #e0eeff; margin-bottom: 4px; }
+.tw-achievement-desc { font-size: 13px; color: rgba(180,210,255,0.62); line-height: 1.5; }
+.tw-achievement-links { display: flex; gap: 8px; margin-top: 8px; }
+.tw-achievement-link {
+  font-size: 11px; color: #64b4ff; text-decoration: none;
+  border: 1px solid rgba(100,180,255,0.28); border-radius: 10px; padding: 3px 10px; transition: all 0.2s;
+}
+.tw-achievement-link:hover { background: rgba(100,180,255,0.09); }
+
+/* Projects */
+.tw-project {
+  border-radius: 14px; border: 1px solid rgba(100,180,255,0.1);
+  background: rgba(100,180,255,0.03); padding: 18px 22px; margin-bottom: 14px;
+  transition: border-color 0.3s;
+}
+.tw-project:hover { border-color: rgba(100,180,255,0.28); }
+.tw-project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.tw-project-name { font-size: 15px; font-weight: 600; color: #e0eeff; }
+.tw-project-dates { font-size: 11px; color: rgba(100,180,255,0.5); }
+.tw-project-bullets {
+  list-style: none; padding: 0; margin: 0 0 12px 0; display: flex; flex-direction: column; gap: 4px;
+}
+.tw-project-bullets li {
+  font-size: 12px; color: rgba(200,220,255,0.68); padding-left: 14px; position: relative; line-height: 1.4;
+}
+.tw-project-bullets li::before { content: '▸'; position: absolute; left: 0; color: #1a6eff; font-size: 10px; top: 2px; }
+.tw-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+.tw-stack-tag {
+  font-size: 10px; padding: 3px 9px; border-radius: 10px;
+  background: rgba(26,110,255,0.1); border: 1px solid rgba(100,180,255,0.18);
+  color: #64b4ff; letter-spacing: 0.04em;
+}
+.tw-project-link {
+  display: inline-block; font-size: 11px; color: #64b4ff; text-decoration: none;
+  margin-top: 10px; border: 1px solid rgba(100,180,255,0.25);
+  border-radius: 10px; padding: 4px 12px; transition: all 0.2s;
+}
+.tw-project-link:hover { background: rgba(100,180,255,0.09); }
+
+/* Hero */
+.tw-hero-name {
+  font-size: clamp(28px, 5vw, 48px); font-weight: 800; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 0%, #64b4ff 60%, #1a6eff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 8px;
+}
+.tw-hero-role { font-size: 16px; color: rgba(100,180,255,0.75); margin-bottom: 6px; font-weight: 500; }
+.tw-hero-tagline { font-size: 13px; color: rgba(200,220,255,0.45); font-style: italic; margin-bottom: 24px; }
+.tw-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.tw-hero-btn {
+  padding: 10px 22px; border-radius: 24px; font-size: 13px; font-weight: 600;
+  cursor: pointer; text-decoration: none; transition: all 0.25s; letter-spacing: 0.04em;
+}
+.tw-hero-btn.primary {
+  background: linear-gradient(135deg, #1a6eff, #64b4ff); color: #fff;
+  border: none; box-shadow: 0 4px 20px rgba(26,110,255,0.4);
+}
+.tw-hero-btn.primary:hover { box-shadow: 0 6px 28px rgba(26,110,255,0.6); transform: translateY(-2px); }
+.tw-hero-btn.secondary {
+  background: transparent; color: #64b4ff; border: 1px solid rgba(100,180,255,0.32);
+}
+.tw-hero-btn.secondary:hover { background: rgba(100,180,255,0.08); }
+
+/* Contact */
+.tw-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tw-contact-item {
+  display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+  border-radius: 14px; border: 1px solid rgba(100,180,255,0.12);
+  background: rgba(100,180,255,0.03); text-decoration: none;
+  transition: all 0.25s; color: inherit;
+}
+.tw-contact-item:hover {
+  border-color: rgba(100,180,255,0.38); background: rgba(100,180,255,0.07);
+  transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,110,255,0.12);
+}
+.tw-contact-icon { font-size: 22px; }
+.tw-contact-label { font-size: 13px; font-weight: 600; color: #e0eeff; }
+.tw-contact-value { font-size: 11px; color: rgba(100,180,255,0.52); margin-top: 2px; }
+
+/* Education */
+.tw-edu-institution { font-size: 17px; font-weight: 700; color: #e0eeff; margin-bottom: 4px; }
+.tw-edu-degree { font-size: 13px; color: rgba(100,180,255,0.68); margin-bottom: 12px; }
+.tw-edu-note {
+  font-size: 12px; color: rgba(200,220,255,0.58); padding: 8px 14px;
+  border-left: 2px solid #1a6eff; background: rgba(26,110,255,0.06);
+  border-radius: 0 8px 8px 0; margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tw-contact-grid { grid-template-columns: 1fr; }
+  .tw-hero-name { font-size: 26px; }
+  .tw-skills-grid { gap: 7px; }
+}
