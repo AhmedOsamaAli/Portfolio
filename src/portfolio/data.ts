@@ -181,6 +181,32 @@ export const achievements: AchievementItem[] = [
 
 export const projects: ProjectItem[] = [
   {
+    name: 'pgwatch AI Copilot',
+    url: 'https://github.com/AhmedOsamaAli/pgwatch-copilot',
+    start: 'Feb 2026',
+    end: 'Present',
+    bullets: [
+      'Built a CLI AI copilot for PostgreSQL monitoring with pgwatch (GSoC 2026 proposal demo).',
+      'Interactive REPL with natural language Q&A, metric discovery, health overviews, and anomaly detection.',
+      'Integrated OpenAI and Ollama LLMs for AI-powered analysis and plain-English SQL generation.',
+      'Supports deep metric inspection (db_stats, locks, sessions, WAL) with colored terminal output.'
+    ],
+    stack: ['Go', 'PostgreSQL', 'OpenAI', 'Ollama', 'pgx', 'Cobra CLI']
+  },
+  {
+    name: 'MetaHarmonizer',
+    url: 'https://github.com/AhmedOsamaAli/metaHarmonizer',
+    start: 'Feb 2026',
+    end: 'Present',
+    bullets: [
+      'Automated biomedical metadata harmonization platform for cBioPortal cancer genomics datasets (GSoC 2026 demo).',
+      'Built a 4-stage ML cascade (dict/fuzzy → ontology → semantic embeddings → Gemini LLM) achieving <2s processing for 141 columns.',
+      'Developed a React + TypeScript curator dashboard with schema mapping, ontology review, quality analytics, and export.',
+      'Integrated NCI Thesaurus (NCIt/UBERON/OHMI) for ontology-level value normalization with batch accept/reject/edit workflows.'
+    ],
+    stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'SentenceTransformer', 'SQLite', 'Tailwind CSS']
+  },
+  {
     name: 'Portfolio Website',
     url: 'https://github.com/AhmedOsamaAli/Portfolio',
     start: 'Nov 2025',

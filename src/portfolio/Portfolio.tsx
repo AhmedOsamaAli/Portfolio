@@ -11,6 +11,7 @@ import { TextReveal } from './TextReveal';
 import { QuickActionMenu } from './QuickActionMenu';
 import { getProjectTheme, getTechIcon } from './projectThemes';
 import { MicrosoftLogo, DFKILogo, GIULogo } from './CompanyLogos';
+import { SnakeGame } from './snake/SnakeGame';
 
 const accent = {
   title: '#2A5CAA',
@@ -161,6 +162,7 @@ function useInitialReadiness(headshotSelector: string, minMs = 3000, maxMs = 500
 export const Portfolio: React.FC = () => {
   const showSplashInitially = typeof window !== 'undefined';
   const [showSplash, setShowSplash] = React.useState(showSplashInitially);
+  const [snakeMode, setSnakeMode] = React.useState(false);
   const initialReady = useInitialReadiness('img[alt="headshot"]', 3000, 5000);
   const isMobile = useIsMobile();
 
@@ -184,9 +186,51 @@ export const Portfolio: React.FC = () => {
       return () => clearTimeout(t);
     }
   }, [initialReady, showSplash]);
+
+  // Full-screen mode
+  if (snakeMode) return <SnakeGame onExit={() => setSnakeMode(false)} />;
+
   return (
     <div className="app">
       {showSplash && <SplashScreen minMs={3000} />}
+      {/* Game mode launch button */}
+      {!showSplash && (
+        <button
+          onClick={() => setSnakeMode(true)}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            left: 24,
+            zIndex: 300,
+            background: 'linear-gradient(135deg, #0a2010, #1a4020)',
+            border: '1px solid rgba(80,220,120,0.4)',
+            borderRadius: '50px',
+            color: '#44dd88',
+            fontSize: '13px',
+            fontWeight: 600,
+            padding: '10px 18px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            letterSpacing: '0.04em',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 4px 20px rgba(40,180,100,0.2)',
+            transition: 'all 0.25s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 28px rgba(40,180,100,0.45)';
+            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px rgba(40,180,100,0.2)';
+            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+          }}
+          title="Play Portfolio Game"
+        >
+          🎮 Game Mode
+        </button>
+      )}
       {/* Hide main content until splash is done */}
       <div style={{ visibility: showSplash ? 'hidden' : 'visible' }}>
       <ScrollProgress />
