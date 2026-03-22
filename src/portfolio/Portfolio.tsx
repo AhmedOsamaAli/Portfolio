@@ -196,6 +196,7 @@ export const Portfolio: React.FC = () => {
       {/* Game mode launch button */}
       {!showSplash && (
         <button
+          className="game-mode-btn"
           onClick={() => setSnakeMode(true)}
           style={{
             position: 'fixed',
