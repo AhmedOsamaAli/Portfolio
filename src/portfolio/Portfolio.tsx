@@ -400,6 +400,17 @@ export const Portfolio: React.FC = () => {
                   <span>GitHub</span>
                 </a>
               </motion.li>
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <a href="https://ahmedosamaali.github.io/Blog/" target="_blank" rel="noreferrer" className="contact-link" aria-label="Personal Blog">
+                  <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                  <span>Blog</span>
+                </a>
+              </motion.li>
             </ul>
           </div>
         </Section>

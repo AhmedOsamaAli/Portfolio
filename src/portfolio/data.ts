@@ -181,6 +181,19 @@ export const achievements: AchievementItem[] = [
 
 export const projects: ProjectItem[] = [
   {
+    name: 'Personal Blog',
+    url: 'https://github.com/AhmedOsamaAli/Blog',
+    start: 'Mar 2026',
+    end: 'Present',
+    bullets: [
+      'Built a full-stack, serverless blog using React, Vite, and GitHub Pages.',
+      'Integrated Supabase as a Backend-as-a-Service for PostgreSQL database and admin authentication.',
+      'Implemented a secure admin CMS panel with Markdown rendering, drafts, and Row Level Security.',
+      'Engineered offline-mode support using localStorage with PBKDF2 hashed passwords and brute-force lockouts.'
+    ],
+    stack: ['React', 'Vite', 'Supabase', 'Tailwind CSS', 'PostgreSQL']
+  },
+  {
     name: 'pgwatch AI Copilot',
     url: 'https://github.com/AhmedOsamaAli/pgwatch-copilot',
     start: 'Feb 2026',
