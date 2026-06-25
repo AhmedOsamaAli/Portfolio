@@ -78,3 +78,18 @@ export const HackerCupLogo: React.FC = () => (
     <div className="hackercup-subtitle">Meta Coding Competition</div>
   </div>
 );
+
+export const GSoCLogo: React.FC = () => (
+  <div className="company-logo gsoc-logo">
+    <img
+      className="gsoc-mark"
+      src={`${import.meta.env.BASE_URL}gsoc-mark.svg`}
+      width="56"
+      height="56"
+      alt="Google Summer of Code logo"
+      loading="lazy"
+    />
+    <div className="gsoc-subtitle">Google Summer of Code</div>
+  </div>
+);
+

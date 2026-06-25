@@ -1,874 +1,799 @@
 import React from 'react';
-import { experiences, internships, education, skills, achievements, projects, SkillItem } from './data';
-import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
-import './portfolio.css';
+import './companyLogos.css';
 import { Img } from './assets';
-import { ICPCLogo, EOILogo, HackerCupLogo } from './CompanyLogos';
-import { Card3D } from './Card3D';
-import CursorTrail from './CursorTrail';
-import { RippleEffect } from './RippleEffect';
-import { TextReveal } from './TextReveal';
-import { QuickActionMenu } from './QuickActionMenu';
-import { getProjectTheme, getTechIcon } from './projectThemes';
-import { MicrosoftLogo, DFKILogo, GIULogo } from './CompanyLogos';
-import { SnakeGame } from './snake/SnakeGame';
+import {
+  experiences,
+  internships,
+  education,
+  skills,
+  achievements,
+  projects,
+  openSource,
+} from './data';
+import {
+  MicrosoftLogo,
+  DFKILogo,
+  GIULogo,
+  ICPCLogo,
+  EOILogo,
+  HackerCupLogo,
+  GSoCLogo,
+} from './CompanyLogos';
+import {
+  Briefcase,
+  Wrench,
+  GraduationCap,
+  Brain,
+  Award,
+  FolderGit2,
+  GitFork,
+  Mail,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  MapPin,
+  ArrowUpRight,
+  Github,
+  Linkedin,
+  Phone,
+  BookOpen,
+  Terminal,
+} from 'lucide-react';
 
-const accent = {
-  title: '#2A5CAA',
-  text: '#3A6CB7',
-  line: '#1A4B99'
-};
+// ---------------------------------------------------------------------------
+// Section metadata (drives the sidebar + scroll-spy)
+// ---------------------------------------------------------------------------
+type SectionId =
+  | 'experience'
+  | 'internships'
+  | 'opensource'
+  | 'education'
+  | 'skills'
+  | 'achievements'
+  | 'projects'
+  | 'contact';
 
-// Hook: mobile detection (matches small viewport width)
-function useIsMobile(breakpoint = 760) {
-  const [mobile, setMobile] = React.useState<boolean>(() => {
+const sectionMeta: { id: SectionId; label: string; icon: React.ReactNode }[] = [
+  { id: 'experience', label: 'Experience', icon: <Briefcase size={16} /> },
+  { id: 'internships', label: 'Internships', icon: <Wrench size={16} /> },
+  { id: 'opensource', label: 'Open Source', icon: <GitFork size={16} /> },
+  { id: 'education', label: 'Education', icon: <GraduationCap size={16} /> },
+  { id: 'skills', label: 'Skills', icon: <Brain size={16} /> },
+  { id: 'achievements', label: 'Achievements', icon: <Award size={16} /> },
+  { id: 'projects', label: 'Projects', icon: <FolderGit2 size={16} /> },
+  { id: 'contact', label: 'Contact', icon: <Mail size={16} /> },
+];
+
+// ---------------------------------------------------------------------------
+// Theme toggle hook
+// ---------------------------------------------------------------------------
+function useTheme(): [boolean, () => void] {
+  const [dark, setDark] = React.useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
+    try {
+      return localStorage.getItem('theme') === 'dark';
+    } catch {
+      return false;
+    }
   });
   React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    const listener = () => setMobile(mq.matches);
-    mq.addEventListener('change', listener);
-    return () => mq.removeEventListener('change', listener);
-  }, [breakpoint]);
-  return mobile;
+    const theme = dark ? 'dark' : 'light';
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      /* ignore */
+    }
+  }, [dark]);
+  return [dark, () => setDark((d) => !d)];
 }
 
-const Section: React.FC<{ id: string; title: string; children: React.ReactNode }> = ({ id, title, children }) => {
-  const prefersReduced = useReducedMotion();
-  const isMobile = useIsMobile();
-  // On mobile: render fully visible immediately (no scroll-trigger lazy reveal)
-  const sectionProps = isMobile ? {} : {
-    initial: prefersReduced ? undefined : { opacity: 0, y: 30 },
-    whileInView: prefersReduced ? undefined : { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.2 },
-    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as any }
-  };
-  const titleProps = isMobile ? {} : {
-    initial: prefersReduced ? undefined : { opacity: 0, x: -30 },
-    whileInView: prefersReduced ? undefined : { opacity: 1, x: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as any }
-  };
-  return (
-    <motion.section id={id} className="section" {...sectionProps}>
-      <motion.h2 className="section-title-enhanced" {...titleProps}>
-        <span className="section-title-icon">{'// '}</span>
-        <span className="section-title-text">{title}</span>
-        <span className="section-title-line"></span>
-      </motion.h2>
-      {children}
-    </motion.section>
-  );
-};
-
-// Right side navigation rail (desktop/tablet only, still works on mobile if desired)
-const sectionMeta: { id: string; label: string; icon: React.ReactNode }[] = [
-  { id: 'experience', label: 'Experience', icon: '💼' },
-  { id: 'internships', label: 'Internships', icon: '🛠️' },
-  { id: 'education', label: 'Education', icon: '🎓' },
-  { id: 'skills', label: 'Skills', icon: '🧠' },
-  { id: 'achievements', label: 'Achievements', icon: '🏅' },
-  { id: 'projects', label: 'Projects', icon: '🗂️' },
-  { id: 'contact', label: 'Contact', icon: '✉️' }
-];
-const SectionRail: React.FC = () => {
-  const [active, setActive] = React.useState<string>('experience');
+// ---------------------------------------------------------------------------
+// Scroll-spy for active sidebar item
+// ---------------------------------------------------------------------------
+function useActiveSection(): SectionId {
+  const [active, setActive] = React.useState<SectionId>('experience');
   React.useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id') as SectionId | null;
             if (id) setActive(id);
-        }
-      });
-    }, { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    sectionMeta.forEach(meta => {
-      const el = document.getElementById(meta.id);
+          }
+        });
+      },
+      { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+    );
+    sectionMeta.forEach((m) => {
+      const el = document.getElementById(m.id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
   }, []);
-  return (
-    <nav className="section-rail" aria-label="Section navigation">
-      <ul>
-        {sectionMeta.map(m => (
-          <li key={m.id}>
-            <a href={`#${m.id}`} className={m.id === active ? 'active' : ''} aria-current={m.id === active ? 'true' : undefined}>
-              <span className="icon" aria-hidden="true">{m.icon}</span>
-              <span className="sr-only">{m.label}</span>
-              <span className="tooltip" role="tooltip">{m.label}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-};
-
-// GitHub highlights removed per user request.
-
-// Hook to coordinate initial readiness (fonts, headshot image, idle) with a max timeout fallback.
-function useInitialReadiness(headshotSelector: string, minMs = 3000, maxMs = 5000) {
-  const [ready, setReady] = React.useState(false);
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return; // SSR safety
-    let cancelled = false;
-    const promises: Promise<any>[] = [];
-    // Fonts
-    if ((document as any).fonts && (document as any).fonts.ready) {
-      promises.push((document as any).fonts.ready.catch(() => {}));
-    }
-    // Headshot image
-    const headshotEl = document.querySelector(headshotSelector) as HTMLImageElement | null;
-    if (headshotEl && !headshotEl.complete) {
-      promises.push(new Promise(res => {
-        const timeout = setTimeout(res, 1800);
-        headshotEl.addEventListener('load', () => { clearTimeout(timeout); res(null); }, { once: true });
-        headshotEl.addEventListener('error', () => { clearTimeout(timeout); res(null); }, { once: true });
-      }));
-    }
-    // A few early images (logos etc.) cap to first 8
-    const earlyImgs = Array.from(document.querySelectorAll('main img')).slice(0, 8) as HTMLImageElement[];
-    earlyImgs.forEach(img => {
-      if (!img.complete) {
-        promises.push(new Promise(res => {
-          const timeout = setTimeout(res, 1600);
-          img.addEventListener('load', () => { clearTimeout(timeout); res(null); }, { once: true });
-          img.addEventListener('error', () => { clearTimeout(timeout); res(null); }, { once: true });
-        }));
-      }
-    });
-    // Idle callback
-    promises.push(new Promise(res => {
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => res(null), { timeout: 1000 });
-      } else {
-        setTimeout(res, 300);
-      }
-    }));
-    const assets = Promise.all(promises).catch(() => {});
-    const minTimer = new Promise(res => setTimeout(res, minMs));
-    const maxTimer = new Promise(res => setTimeout(res, maxMs));
-    Promise.race([Promise.all([assets, minTimer]), maxTimer]).then(() => {
-      if (!cancelled) setReady(true);
-    });
-    return () => { cancelled = true; };
-  }, [headshotSelector, minMs, maxMs]);
-  return ready;
+  return active;
 }
 
-export const Portfolio: React.FC = () => {
-  const showSplashInitially = typeof window !== 'undefined';
-  const [showSplash, setShowSplash] = React.useState(showSplashInitially);
-  const [snakeMode, setSnakeMode] = React.useState(false);
-  const initialReady = useInitialReadiness('img[alt="headshot"]', 3000, 5000);
-  const isMobile = useIsMobile();
-
-  // Force scroll to top on mount/refresh
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.scrollTo(0, 0);
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
-
-  // Hide splash when readiness achieved (with small fade buffer)
-  React.useEffect(() => {
-    if (!showSplash) return;
-    if (initialReady) {
-      // Start fade immediately, allow CSS animation to finish before visibility reveal
-      const root = document.querySelector('.splash');
-      if (root) root.classList.add('splash-hide');
-      const t = setTimeout(() => setShowSplash(false), 480); // match fade duration
-      return () => clearTimeout(t);
-    }
-  }, [initialReady, showSplash]);
-
-  // Full-screen mode
-  if (snakeMode) return <SnakeGame onExit={() => setSnakeMode(false)} />;
-
-  return (
-    <div className="app">
-      {showSplash && <SplashScreen minMs={3000} />}
-      {/* Game mode launch button */}
-      {!showSplash && (
-        <button
-          className="game-mode-btn"
-          onClick={() => setSnakeMode(true)}
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            left: 24,
-            zIndex: 300,
-            background: 'linear-gradient(135deg, #0a2010, #1a4020)',
-            border: '1px solid rgba(80,220,120,0.4)',
-            borderRadius: '50px',
-            color: '#44dd88',
-            fontSize: '13px',
-            fontWeight: 600,
-            padding: '10px 18px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            letterSpacing: '0.04em',
-            backdropFilter: 'blur(12px)',
-            boxShadow: '0 4px 20px rgba(40,180,100,0.2)',
-            transition: 'all 0.25s',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 28px rgba(40,180,100,0.45)';
-            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px rgba(40,180,100,0.2)';
-            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-          }}
-          title="Play Portfolio Game"
-        >
-          🎮 Game Mode
-        </button>
-      )}
-      {/* Hide main content until splash is done */}
-      <div style={{ visibility: showSplash ? 'hidden' : 'visible' }}>
-      <ScrollProgress />
-      <CursorTrail />
-      <RippleEffect />
-      <SectionRail />
-      <QuickActionMenu />
-      <Header />
-      <Hero />
-      <main>
-        <Section id="experience" title="Experience">
-          {experiences.map(exp => (
-            <Card3D key={exp.company + exp.start} className="card experience-card">
-              <div className="exp-flex">
-                <div className="exp-info">
-                  <header>
-                    <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
-                    <span className="dates">{exp.start} – {exp.end}</span>
-                    <span className="location">{exp.location}</span>
-                  </header>
-                  <ul>
-                    {exp.bullets.map(b => <li key={b}>{b}</li>)}
-                  </ul>
-                </div>
-                {exp.logo && (
-                  exp.company.toLowerCase().includes('microsoft') ? <MicrosoftLogo /> : <DFKILogo />
-                )}
-              </div>
-            </Card3D>
-          ))}
-        </Section>
-        <Section id="internships" title="Internships">
-          {internships.map(exp => (
-            <Card3D key={exp.company + exp.start} className="card internship-card">
-              <div className="exp-flex">
-                <div className="exp-info">
-                  <header>
-                    <h3>{exp.role} @ <span className="company">{exp.company}</span></h3>
-                    <span className="dates">{exp.start} – {exp.end}</span>
-                    <span className="location">{exp.location}</span>
-                  </header>
-                  <ul>
-                    {exp.bullets.map(b => <li key={b}>{b}</li>)}
-                  </ul>
-                </div>
-                {exp.logo && (
-                  exp.company.toLowerCase().includes('microsoft') ? <MicrosoftLogo /> : <DFKILogo />
-                )}
-              </div>
-            </Card3D>
-          ))}
-        </Section>
-        <Section id="education" title="Education">
-            {education.map(ed => (
-              <Card3D key={ed.institution} className="card education-card">
-                <div className="edu-flex">
-                  <div className="edu-info">
-                    <header>
-                      <h3>{ed.degree}</h3>
-                      <span className="institution">{ed.institution}</span>
-                      <span className="dates">{ed.start} – {ed.end}</span>
-                      <span className="location">{ed.location}</span>
-                    </header>
-                    {ed.notes && <ul>{ed.notes.map(n => <li key={n}>{n}</li>)}</ul>}
-                  </div>
-                  {ed.institution.toLowerCase().includes('german international university') && (
-                    <GIULogo />
-                  )}
-                </div>
-              </Card3D>
-            ))}
-        </Section>
-        {!isMobile && (
-          <Section id="skills" title="Skills">
-            <SkillsSection />
-          </Section>
-        )}
-        <Section id="achievements" title="Achievements">
-          {achievements.map(a => {
-            // Get the appropriate logo component based on achievement title
-            let LogoComponent = null;
-            if (a.title.includes('ICPC')) {
-              LogoComponent = ICPCLogo;
-            } else if (a.title.includes('EOI')) {
-              LogoComponent = EOILogo;
-            } else if (a.title.includes('HackerCup')) {
-              LogoComponent = HackerCupLogo;
-            }
-
-            return (
-              <div key={a.title} className="card achievement achievement-with-logo">
-                <div className="achievement-content-wrapper">
-                  <div className="achievement-logo-section">
-                    {LogoComponent ? <LogoComponent /> : (
-                      a.icon && <span className="achievement-icon" aria-hidden="true">{a.icon}</span>
-                    )}
-                  </div>
-                  <div className="achievement-text-section">
-                    <header>
-                      <h3 className="achievement-title-simple">{a.title}</h3>
-                    </header>
-                    <p>{a.description}</p>
-                    {a.links && <p className="links">{a.links.map(l => <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>)}</p>}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </Section>
-        <Section id="projects" title="Projects">
-              <ProjectTimeline />
-        </Section>
-        <Section id="contact" title="Contact">
-          <div className="contact-links" aria-label="Contact links">
-            <motion.p 
-              className="contact-intro"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              Let's build something great together. Reach out via any channel below:
-            </motion.p>
-            <ul className="contact-list">
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.5 }}
-              >
-                <a href="tel:+201223729895" className="contact-link" aria-label="Call Ahmed" title="+20 122 372 9895">
-                  <span className="icon" aria-hidden="true">📱</span>
-                  <span>Phone</span>
-                </a>
-              </motion.li>
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                <a href="mailto:ahmedosamadiab@gmail.com" className="contact-link" aria-label="Email Ahmed">
-                  <span className="icon" aria-hidden="true">📧</span>
-                  <span>Email</span>
-                </a>
-              </motion.li>
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                <a href="https://www.linkedin.com/in/ahmedosamadiab/" target="_blank" rel="noreferrer" className="contact-link" aria-label="LinkedIn profile">
-                  <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11.02 5.001A2.5 2.5 0 014.98 3.5zM3 9h4v12H3zM9.5 9h3.8l.2 1.7c.8-1.3 2.1-2 3.9-2 3 0 4.6 2 4.6 5.4V21h-4v-6.2c0-1.7-.6-2.7-2-2.7-1.5 0-2.3 1-2.3 2.7V21h-4V9z"/></svg>
-                  <span>LinkedIn</span>
-                </a>
-              </motion.li>
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                <a href="https://github.com/AhmedOsamaAli" target="_blank" rel="noreferrer" className="contact-link" aria-label="GitHub profile">
-                  <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.41 7.86 10.94.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.26 3.4.96.11-.76.41-1.26.74-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 012.9-.39c.99 0 1.99.13 2.9.39 2.2-1.5 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.42.37.79 1.1.79 2.22 0 1.6-.02 2.88-.02 3.27 0 .31.21.68.8.56A10.52 10.52 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
-                  <span>GitHub</span>
-                </a>
-              </motion.li>
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <a href="https://ahmedosamaali.github.io/Blog/" target="_blank" rel="noreferrer" className="contact-link" aria-label="Personal Blog">
-                  <svg className="icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                  <span>Blog</span>
-                </a>
-              </motion.li>
-            </ul>
-          </div>
-        </Section>
-      </main>
-      <Footer />
-      </div>
-    </div>
-  );
-};
-
-// Vertical timeline for projects
-const ProjectTimeline: React.FC = () => {
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isMobile = useIsMobile();
-  return (
-    <div className="timeline" aria-label="Projects timeline">
-      <div className="timeline-line" aria-hidden="true" />
-      {projects.map((p, idx) => {
-        const theme = getProjectTheme(p);
-        return (
-          <motion.article
-            key={p.name}
-            className="timeline-item"
-            {...(isMobile ? {} : {
-              initial: prefersReduced ? undefined : { opacity: 0, y: 32 },
-              whileInView: prefersReduced ? undefined : { opacity: 1, y: 0 },
-              viewport: { once: true, amount: 0.3 },
-              transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] as any, delay: prefersReduced ? 0 : idx * 0.05 }
-            })}
-          >
-            <div className="timeline-point" aria-hidden="true">
-              <span className="tp-inner" style={{ background: theme.gradient }} />
-            </div>
-            <div className="timeline-date" aria-label={`Project dates ${p.start} to ${p.end}`}>{p.start} – {p.end}</div>
-            <div className="timeline-content card project-card" data-animation={theme.animation}>
-              <div className="project-icon" style={{ background: theme.gradient }}>
-                {theme.icon}
-              </div>
-              <header>
-                <h3 className="project-title">
-                  <a href={p.url || '#'} target={p.url? '_blank':'_self'} rel="noreferrer" style={{ color: theme.color }}>
-                    {p.name}
-                  </a>
-                </h3>
-                <span className="sr-only" aria-label={`Dates: ${p.start} to ${p.end}`}>{p.start} – {p.end}</span>
-              </header>
-              <ul className="project-bullets">{p.bullets.map(b => <li key={b}>{b}</li>)}</ul>
-              <div className="stack-tags" aria-label="Technology stack">
-                {p.stack.map(s => (
-                  <span key={s} className="pill stack-pill" style={{ borderColor: theme.color }}>
-                    <span className="tech-icon">{getTechIcon(s)}</span>
-                    <span className="tech-name">{s}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.article>
-        );
-      })}
-    </div>
-  );
-};
-const Header: React.FC = () => {
-  const [transparent, setTransparent] = React.useState(true);
-  const [hide, setHide] = React.useState(false);
-  const lastY = React.useRef<number>(0);
-  React.useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      const goingDown = y > lastY.current;
-      // become opaque after threshold
-      setTransparent(y < 140);
-      // hide only when going down beyond hero height
-      setHide(goingDown && y > 280);
-      lastY.current = y;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  const prefersReduced = useReducedMotion();
-  
-  return (
-    <header className={`site-header ${transparent ? 'transparent' : ''} ${hide ? 'hide' : ''}`}>    
-      <div className="brand">
-        <motion.h1 
-          className="glow brand-name"
-          initial={prefersReduced ? false : { opacity: 0, x: -20 }}
-          animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <span className="first-name">Ahmed</span>
-          <span className="last-name">Osama</span>
-        </motion.h1>
-        <motion.p 
-          className="tag brand-title"
-          initial={prefersReduced ? false : { opacity: 0, x: -20 }}
-          animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <span className="title-icon">{'{ '}</span>
-          Software Engineer
-          <span className="title-icon">{' }'}</span>
-        </motion.p>
-      </div>
-      <Nav />
-      <ThemeToggle />
-    </header>
-  );
-};
-
-const ScrollProgress: React.FC = () => {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
-  return <motion.div className="scroll-progress" style={{ scaleX }} />;
-};
-
-const Hero: React.FC = () => {
-  const prefersReduced = useReducedMotion();
-  return (
-    <motion.section
-      id="hero"
-      className="hero"
-      initial={prefersReduced ? false : { opacity: 0, y: 40 }}
-      animate={prefersReduced ? {} : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
-    >
-      <div className="hero-inner">
-  <Img asset="headshot" />
-  <TextReveal text="Software Engineer crafting resilient & performant products." className="hero-title" />
-  <motion.p 
-    className="hero-sub hero-subtitle-enhanced"
-    initial={prefersReduced ? false : { opacity: 0, y: 20 }}
-    animate={prefersReduced ? {} : { opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.6 }}
-  >
-    <span className="highlight-word">Focused</span> on <span className="highlight-word">clean architecture</span>, <span className="highlight-word">automation</span>, <span className="highlight-word">performance optimization</span> and <span className="highlight-word">developer experience</span>. I build <span className="highlight-word">reliable pipelines</span> and <span className="highlight-word">user-centric</span> full-stack applications.
-  </motion.p>
-        <RotatingTagline />
-        <div className="hero-cta">
-          <a href="#projects" className="btn primary">View Projects</a>
-          <a href="mailto:ahmedosamadiab@gmail.com" className="btn secondary">Get in Touch</a>
+// ---------------------------------------------------------------------------
+// Top navigation bar
+// ---------------------------------------------------------------------------
+const TopNav: React.FC<{
+  dark: boolean;
+  onToggleTheme: () => void;
+  onToggleSidebar: () => void;
+  sidebarOpen: boolean;
+}> = ({ dark, onToggleTheme, onToggleSidebar, sidebarOpen }) => (
+  <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur md:px-6">
+    <div className="flex items-center gap-3">
+      <button
+        className="ph-btn ph-btn-ghost !p-2 md:hidden"
+        aria-label="Toggle sidebar"
+        aria-expanded={sidebarOpen}
+        onClick={onToggleSidebar}
+      >
+        {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+      </button>
+      <div className="flex items-center gap-2">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-primary">
+          <Terminal size={15} />
+        </span>
+        <div className="leading-tight">
+          <div className="text-sm font-semibold">Ahmed Osama</div>
+          <div className="font-mono text-[11px] text-muted">software_engineer</div>
         </div>
       </div>
-    </motion.section>
-  );
-};
-
-const Nav: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const sections = ['experience','internships','education','skills','achievements','projects','contact'];
-  
-  const handleLinkClick = () => {
-    setIsOpen(false);
-  };
-
-  return (
-    <>
-      <button 
-        className="hamburger" 
-        aria-label="Toggle navigation menu"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
+    </div>
+    <div className="flex items-center gap-2">
+      <button
+        className="ph-btn ph-btn-ghost !p-2"
+        aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-pressed={dark}
+        onClick={onToggleTheme}
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        {dark ? <Sun size={16} /> : <Moon size={16} />}
       </button>
-      <nav className={isOpen ? 'open' : ''}>
-        <ul>
-          {sections.map(s => <li key={s}><a href={'#'+s} onClick={handleLinkClick}>{s}</a></li>)}
-        </ul>
-      </nav>
-    </>
-  );
-};
-
-const ThemeToggle: React.FC = () => {
-  const initialPref = () => {
-    if (typeof window === 'undefined') return false; // default light (false)
-    try {
-      const stored = localStorage.getItem('theme');
-      if (stored === 'dark') return true;
-      return false; // force light default when no stored value
-    } catch {
-      return false;
-    }
-  };
-  const [dark, setDark] = React.useState<boolean>(initialPref);
-  React.useEffect(() => {
-    const theme = dark ? 'dark' : 'light';
-    document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem('theme', theme); } catch {}
-  }, [dark]);
-  return (
-    <button
-      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-      aria-pressed={dark}
-      className="theme-toggle"
-      onClick={() => setDark(d => !d)}
-    >
-      {dark ? '☾' : '☀'}
-    </button>
-  );
-};
-
-const Footer: React.FC = () => (
-  <footer className="site-footer">
-    <small>&copy; {new Date().getFullYear()} Ahmed Osama.</small>
-  </footer>
+      <a
+        href="mailto:ahmedosamadiab@gmail.com"
+        className="ph-btn ph-btn-primary hidden sm:inline-flex"
+      >
+        <Mail size={15} />
+        Get in touch
+      </a>
+    </div>
+  </header>
 );
 
-
-export default Portfolio;
-
-// Timed splash screen with dark theme variant (fade out handled externally via readiness hook)
-const SplashScreen: React.FC<{ minMs?: number }> = ({ minMs = 3000 }) => {
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const [darkTheme, setDarkTheme] = React.useState(false);
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const current = document.documentElement.dataset.theme || localStorage.getItem('theme') || 'light';
-    setDarkTheme(current === 'dark');
-  }, []);
-  const fullTitle = 'Ahmed Osama';
-  const fullSubLight = 'Software Engineer @ Microsoft';
-  const fullSubDark = 'Software Engineer @ Microsoft — building in the dark 🌙';
-  const fullSub = darkTheme ? fullSubDark : fullSubLight;
-  const tagline = '✨ Crafting resilient & performant products';
-  const [titleChars, setTitleChars] = React.useState(0);
-  const [subChars, setSubChars] = React.useState(0);
-  const [taglineChars, setTaglineChars] = React.useState(0);
-  const [showContent, setShowContent] = React.useState(false);
-  React.useEffect(() => { setTimeout(() => setShowContent(true), 60); }, []);
-  React.useEffect(() => {
-    if (prefersReduced) {
-      setTitleChars(fullTitle.length);
-      setSubChars(fullSub.length);
-      setTaglineChars(tagline.length);
-      return;
-    }
-    const typingBudget = Math.min(minMs * 0.6, 2400);
-    const titleDuration = typingBudget * 0.40;
-    const subDuration = typingBudget * 0.30;
-    const taglineDuration = typingBudget * 0.30;
-    const totalTyping = titleDuration + subDuration + taglineDuration;
-    const start = performance.now();
-    const step = (now: number) => {
-      const elapsed = now - start;
-      if (elapsed < titleDuration) {
-        setTitleChars(Math.min(fullTitle.length, Math.floor((elapsed / titleDuration) * fullTitle.length)));
-      } else if (elapsed < titleDuration + subDuration) {
-        setTitleChars(fullTitle.length);
-        const subElapsed = elapsed - titleDuration;
-        setSubChars(Math.min(fullSub.length, Math.floor((subElapsed / subDuration) * fullSub.length)));
-      } else if (elapsed < totalTyping) {
-        setTitleChars(fullTitle.length);
-        setSubChars(fullSub.length);
-        const tagElapsed = elapsed - titleDuration - subDuration;
-        setTaglineChars(Math.min(tagline.length, Math.floor((tagElapsed / taglineDuration) * tagline.length)));
-      } else {
-        setTitleChars(fullTitle.length);
-        setSubChars(fullSub.length);
-        setTaglineChars(tagline.length);
-      }
-      if (elapsed < totalTyping) requestAnimationFrame(step);
-    };
-    const raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [prefersReduced, fullSub, tagline, minMs, fullTitle]);
-  return (
-    <div className={`splash ${darkTheme ? 'dark-splash' : ''} ${showContent ? 'splash-visible' : ''}`} role="status" aria-label="Intro splash">
-      <div className="splash-bg-orb splash-orb-1" />
-      <div className="splash-bg-orb splash-orb-2" />
-      <div className="splash-bg-orb splash-orb-3" />
-      <div className="splash-inner">
-        <div className="splash-logo">
-          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
-            <circle cx="30" cy="30" r="28" stroke="url(#gradient)" strokeWidth="2" className="splash-logo-circle" />
-            <text x="30" y="40" textAnchor="middle" fill="url(#gradient)" fontSize="28" fontWeight="bold" className="splash-logo-text">AO</text>
-            <defs>
-              <linearGradient id="gradient" x1="0" y1="0" x2="60" y2="60">
-                <stop offset="0%" stopColor="#2A5CAA" />
-                <stop offset="100%" stopColor="#5B8FCC" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <h1 className="splash-title">
-          {fullTitle.slice(0, titleChars)}
-          {!prefersReduced && titleChars < fullTitle.length && <span className="caret" aria-hidden="true">|</span>}
-        </h1>
-        <p className="splash-sub">
-          {fullSub.slice(0, subChars)}
-          {!prefersReduced && subChars < fullSub.length && <span className="caret" aria-hidden="true">|</span>}
-        </p>
-        <p className="splash-tagline">
-          {tagline.slice(0, taglineChars)}
-          {!prefersReduced && taglineChars < tagline.length && <span className="caret" aria-hidden="true">|</span>}
-        </p>
-        <div className="splash-loader" aria-label="Loading assets">
-          <div className="splash-loader-bar" />
-        </div>
+// ---------------------------------------------------------------------------
+// Sidebar navigation
+// ---------------------------------------------------------------------------
+const Sidebar: React.FC<{
+  active: SectionId;
+  open: boolean;
+  onNavigate: () => void;
+}> = ({ active, open, onNavigate }) => (
+  <aside
+    className={[
+      'fixed inset-y-0 left-0 z-30 mt-14 w-60 shrink-0 border-r border-border bg-card px-3 py-4 transition-transform duration-200 md:sticky md:top-14 md:mt-0 md:h-[calc(100vh-3.5rem)] md:translate-x-0',
+      open ? 'translate-x-0' : '-translate-x-full',
+    ].join(' ')}
+  >
+    <nav aria-label="Section navigation" className="flex flex-col gap-1">
+      <div className="px-2 pb-2 font-mono text-[11px] uppercase tracking-wider text-muted">
+        Sections
+      </div>
+      {sectionMeta.map((m) => (
+        <a
+          key={m.id}
+          href={`#${m.id}`}
+          onClick={onNavigate}
+          className={`ph-nav-link ${active === m.id ? 'active' : ''}`}
+          aria-current={active === m.id ? 'true' : undefined}
+        >
+          <span className="ph-nav-indicator" aria-hidden="true" />
+          <span className="text-muted-foreground/80">{m.icon}</span>
+          <span>{m.label}</span>
+        </a>
+      ))}
+    </nav>
+    <div className="mt-6 border-t border-border pt-4">
+      <div className="px-2 pb-2 font-mono text-[11px] uppercase tracking-wider text-muted">
+        Links
+      </div>
+      <div className="flex flex-col gap-1">
+        <a
+          href="https://github.com/AhmedOsamaAli"
+          target="_blank"
+          rel="noreferrer"
+          className="ph-nav-link"
+        >
+          <span className="ph-nav-indicator" aria-hidden="true" />
+          <Github size={16} /> GitHub
+        </a>
+        <a
+          href="https://www.linkedin.com/in/ahmedosamadiab/"
+          target="_blank"
+          rel="noreferrer"
+          className="ph-nav-link"
+        >
+          <span className="ph-nav-indicator" aria-hidden="true" />
+          <Linkedin size={16} /> LinkedIn
+        </a>
+        <a
+          href="https://ahmedosamaali.github.io/Blog/"
+          target="_blank"
+          rel="noreferrer"
+          className="ph-nav-link"
+        >
+          <span className="ph-nav-indicator" aria-hidden="true" />
+          <BookOpen size={16} /> Blog
+        </a>
       </div>
     </div>
-  );
-};
+  </aside>
+);
 
-// Humorous rotating coding tagline
-const RotatingTagline: React.FC = () => {
-  const phrases = [
-    'docker ps | grep inspiration',
-    'const bug = feature?.notYet()',
-    'npm run refactor --silent',
-    '/* TODO: name this variable better */'
-  ];
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const [index, setIndex] = React.useState(0);
-  const [text, setText] = React.useState('');
-  const [deleting, setDeleting] = React.useState(false);
-  React.useEffect(() => {
-    if (prefersReduced) return;
-    const full = phrases[index];
-    const speed = deleting ? 26 : 44;
-    const t = setTimeout(() => {
-      if (!deleting) {
-        const nextLen = text.length + 1;
-        setText(full.slice(0, nextLen));
-        if (nextLen === full.length) setTimeout(() => setDeleting(true), 850);
-      } else {
-        const nextLen = text.length - 1;
-        setText(full.slice(0, nextLen));
-        if (nextLen === 0) {
-          setDeleting(false);
-          setIndex(i => (i + 1) % phrases.length);
-        }
-      }
-    }, speed);
-    return () => clearTimeout(t);
-  }, [text, deleting, index, prefersReduced]);
-  return (
-    <div className="rotating-tagline" aria-live="polite">
-      <code>{prefersReduced ? phrases[0] : text}<span className="rt-caret" aria-hidden="true">|</span></code>
-    </div>
-  );
-};
-
-// Scroll XP badge with celebration
-const XPBadge: React.FC = () => {
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Do not render on phones / narrow screens
-  const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
-  if (isMobile) return null;
-  const levels = [
-    { name: 'Explorer', threshold: 0 },
-    { name: 'Refactorer', threshold: 0.25 },
-    { name: 'Optimizer', threshold: 0.50 },
-    { name: 'Architect', threshold: 0.75 },
-    { name: 'Legend', threshold: 0.92 }
-  ];
-  const [progress, setProgress] = React.useState(0);
-  const [level, setLevel] = React.useState(levels[0].name);
-  const [celebrate, setCelebrate] = React.useState(false);
-  const [hidden, setHidden] = React.useState(false);
-  React.useEffect(() => {
-    const onScroll = () => {
-      const doc = document.documentElement;
-      const scrollTop = window.scrollY || doc.scrollTop;
-      const scrollHeight = doc.scrollHeight - doc.clientHeight;
-      const p = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
-      setProgress(p);
-      for (let i = levels.length - 1; i >= 0; i--) {
-        if (p >= levels[i].threshold) { setLevel(levels[i].name); break; }
-      }
-      if (p >= 0.995 && !celebrate) setCelebrate(true);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [celebrate]);
-  const percent = Math.round(progress * 100);
-  // When celebration starts, schedule hide after animation (~3.2s confetti + buffer)
-  React.useEffect(() => {
-    if (celebrate && !hidden) {
-      const t = setTimeout(() => setHidden(true), prefersReduced ? 1800 : 3800);
-      return () => clearTimeout(t);
-    }
-  }, [celebrate, hidden, prefersReduced]);
-  const message = !celebrate ? 'Keep scrolling to celebrate!' : '🎉 YOU made it!';
-  if (hidden) return null;
-  return (
-    <div className={`xp-badge ${celebrate ? 'celebrate' : ''}`} aria-live="polite" aria-label={`Scroll progress ${percent}%`}>      
-      <div className="xp-inner">
-        <span className="xp-level">{level}</span>
-        <div className="xp-bar"><div className="xp-fill" style={{ width: `${percent}%` }} /></div>
-        <span className="xp-percent">{percent}%</span>
-        <div className="xp-msg" aria-live="polite">{message}</div>
-        {celebrate && !prefersReduced && (
-          <div className="confetti" aria-hidden="true">
-            {Array.from({ length: 18 }).map((_, i) => <span key={i} className="piece" style={{ ['--ci' as any]: i }} />)}
-          </div>
-        )}
-        {celebrate && prefersReduced && (
-          <div className="celebrate-static" aria-hidden="true">🎉</div>
-        )}
+// ---------------------------------------------------------------------------
+// Section wrapper
+// ---------------------------------------------------------------------------
+const Section: React.FC<{
+  id: SectionId;
+  title: string;
+  kicker: string;
+  children: React.ReactNode;
+}> = ({ id, title, kicker, children }) => (
+  <section id={id} className="scroll-mt-20 animate-fadeIn">
+    <div className="mb-5">
+      <div className="font-mono text-xs uppercase tracking-wider text-muted">
+        {`// ${kicker}`}
       </div>
+      <h2 className="mt-1 text-2xl font-bold">{title}</h2>
     </div>
-  );
+    {children}
+  </section>
+);
+
+// ---------------------------------------------------------------------------
+// Window-style card (app-window aesthetic)
+// ---------------------------------------------------------------------------
+const WindowCard: React.FC<{
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ title, children, className }) => (
+  <div className={`ph-card overflow-hidden ${className ?? ''}`}>
+    {title && (
+      <div className="flex items-center gap-2 border-b border-border bg-secondary/40 px-4 py-2">
+        <span className="flex gap-1.5" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full border border-border bg-background" />
+          <span className="h-2.5 w-2.5 rounded-full border border-border bg-background" />
+          <span className="h-2.5 w-2.5 rounded-full border border-border bg-primary" />
+        </span>
+        <span className="font-mono text-xs text-muted">{title}</span>
+      </div>
+    )}
+    <div className="p-5">{children}</div>
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Experience / internship entry
+// ---------------------------------------------------------------------------
+const RoleEntry: React.FC<{
+  role: string;
+  company: string;
+  location: string;
+  start: string;
+  end: string;
+  bullets: string[];
+  logo?: string;
+}> = ({ role, company, location, start, end, bullets, logo }) => (
+  <WindowCard title={`${company.toLowerCase()}.role`}>
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1">
+        <h3 className="text-lg font-semibold">
+          {role} <span className="text-muted">@ {company}</span>
+        </h3>
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+          <span className="font-mono text-xs">
+            {start} – {end}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <MapPin size={13} /> {location}
+          </span>
+        </div>
+        <ul className="mt-3 space-y-2">
+          {bullets.map((b) => (
+            <li key={b} className="flex gap-2 text-sm text-foreground/90">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {logo && (
+        <div className="shrink-0">
+          {company.toLowerCase().includes('microsoft') ? (
+            <MicrosoftLogo />
+          ) : (
+            <DFKILogo />
+          )}
+        </div>
+      )}
+    </div>
+  </WindowCard>
+);
+
+// ---------------------------------------------------------------------------
+// Skills table (developer-tool dense table)
+// ---------------------------------------------------------------------------
+const skillGroupLabels: Record<keyof typeof skills, string> = {
+  languages: 'Languages',
+  frameworks: 'Frameworks',
+  databases: 'Databases',
+  tools: 'Tools',
+  cloud: 'Cloud',
 };
 
-// Memoized skills section (performance optimized)
-const SkillsSection: React.FC = React.memo(() => {
-  const categories = React.useMemo(() => Object.entries(skills) as [string, SkillItem[]][], []);
-  const isMobile = useIsMobile();
-  // Intersection observer only on non-mobile for progressive reveal
-  React.useEffect(() => {
-    if (isMobile) {
-      // Immediately mark all categories revealed
-      document.querySelectorAll('.skill-category-enhanced').forEach(el => el.classList.add('revealed'));
-      return;
-    }
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('revealed');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.25 });
-    document.querySelectorAll('.skill-category-enhanced').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [isMobile]);
-  return (
-    <div className="skills-stacked" data-perf="optimized">
-      {categories.map(([category, items]) => (
-        <div key={category} className={"skill-category-enhanced reveal-on-scroll" + (isMobile ? ' revealed' : '')}>
-          <h3 className="skill-category-title">{category}</h3>
-          <div className="skill-items-row wrap">
-            {items.map(skill => (
-              <div
-                key={skill.name}
-                className="skill-item-3d"
-                data-color={skill.color}
-                style={{ '--skill-color': skill.color } as React.CSSProperties}
-                tabIndex={0}
+const SkillsTable: React.FC = () => (
+  <div className="grid gap-4 md:grid-cols-2">
+    {(Object.keys(skills) as (keyof typeof skills)[]).map((group) => (
+      <WindowCard key={group} title={`skills/${group}`}>
+        <div className="mb-3 flex items-center gap-2">
+          <Terminal size={15} className="text-primary" />
+          <h3 className="text-base font-semibold">{skillGroupLabels[group]}</h3>
+        </div>
+        <table className="w-full border-collapse text-sm">
+          <tbody>
+            {skills[group].map((s) => (
+              <tr
+                key={s.name}
+                className="border-t border-border/70 transition-colors hover:bg-accent"
               >
-                <span className="skill-icon-3d" aria-hidden="true">{skill.icon}</span>
-                <span className="skill-name-3d">{skill.name}</span>
-              </div>
+                <td className="py-1.5 pr-3 font-mono text-xs text-muted">
+                  {s.icon}
+                </td>
+                <td className="py-1.5 pr-3 font-medium">{s.name}</td>
+                <td className="py-1.5">
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`h-1.5 w-5 rounded-sm ${
+                          i < (s.level ?? 0)
+                            ? 'bg-primary'
+                            : 'bg-border'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </td>
+              </tr>
             ))}
+          </tbody>
+        </table>
+      </WindowCard>
+    ))}
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Hero
+// ---------------------------------------------------------------------------
+const Hero: React.FC = () => (
+  <section
+    id="hero"
+    className="relative mb-12 grid items-center gap-8 md:grid-cols-[1fr_auto]"
+  >
+    <div>
+      <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-xs text-muted">
+        <span className="h-2 w-2 rounded-full bg-primary" />
+        Available for new work
+      </div>
+      <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
+        Software Engineer crafting resilient &amp; performant products.
+      </h1>
+      <p className="mt-4 max-w-2xl text-base text-muted">
+        Focused on clean architecture, automation, performance optimization and
+        developer experience. I build reliable pipelines and user-centric
+        full-stack applications.
+      </p>
+      <pre className="ph-code mt-5 max-w-md">
+        <span className="text-muted">$</span> whoami{'\n'}ahmed_osama ·
+        software_engineer @ microsoft
+      </pre>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <a href="#projects" className="ph-btn ph-btn-primary">
+          View projects <ArrowUpRight size={15} />
+        </a>
+        <a
+          href="mailto:ahmedosamadiab@gmail.com"
+          className="ph-btn ph-btn-secondary"
+        >
+          Get in touch
+        </a>
+      </div>
+    </div>
+    <div className="justify-self-center md:justify-self-end">
+      <div className="group relative h-48 w-48 sm:h-56 sm:w-56">
+        {/* Soft themed glow behind the avatar */}
+        <div
+          className="absolute -inset-3 rounded-full opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-50"
+          style={{
+            background:
+              'radial-gradient(circle at 32% 30%, var(--primary), transparent 70%)',
+          }}
+          aria-hidden="true"
+        />
+        {/* Gradient ring frame */}
+        <div className="relative h-full w-full rounded-full bg-gradient-to-br from-primary via-primary/40 to-border p-[3px] shadow-subtle">
+          <div className="relative h-full w-full overflow-hidden rounded-full bg-card">
+            <Img
+              asset="headshot"
+              className="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+);
+
+// ---------------------------------------------------------------------------
+// Achievements
+// ---------------------------------------------------------------------------
+const Achievements: React.FC = () => (
+  <div className="grid gap-4 md:grid-cols-3">
+    {achievements.map((a) => {
+      let Logo: React.FC | null = null;
+      if (a.title.includes('ICPC')) Logo = ICPCLogo;
+      else if (a.title.includes('EOI')) Logo = EOILogo;
+      else if (a.title.includes('HackerCup')) Logo = HackerCupLogo;
+      return (
+        <WindowCard key={a.title}>
+          <div className="mb-3 flex h-14 items-center">
+            {Logo ? (
+              <Logo />
+            ) : (
+              <span className="text-3xl" aria-hidden="true">
+                {a.icon}
+              </span>
+            )}
+          </div>
+          <h3 className="text-base font-semibold">{a.title}</h3>
+          <p className="mt-1 text-sm text-muted">{a.description}</p>
+          {a.links && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {a.links.map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="ph-badge hover:border-primary"
+                >
+                  {l.label}
+                  <ArrowUpRight size={12} />
+                </a>
+              ))}
+            </div>
+          )}
+        </WindowCard>
+      );
+    })}
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Projects
+// ---------------------------------------------------------------------------
+const Projects: React.FC = () => (
+  <div className="grid gap-4 lg:grid-cols-2">
+    {projects.map((p) => (
+      <WindowCard key={p.name} title={p.name.toLowerCase().replace(/\s+/g, '_')}>
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-lg font-semibold">
+            <a
+              href={p.url || '#'}
+              target={p.url ? '_blank' : '_self'}
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 hover:text-primary"
+            >
+              {p.name}
+              <ArrowUpRight size={15} />
+            </a>
+          </h3>
+          <span className="shrink-0 font-mono text-xs text-muted">
+            {p.start} – {p.end}
+          </span>
+        </div>
+        <ul className="mt-3 space-y-2">
+          {p.bullets.map((b) => (
+            <li key={b} className="flex gap-2 text-sm text-foreground/90">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {p.stack.map((s) => (
+            <span key={s} className="ph-tag">
+              {s}
+            </span>
+          ))}
+        </div>
+      </WindowCard>
+    ))}
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Open Source (GSoC)
+// ---------------------------------------------------------------------------
+const OpenSource: React.FC = () => (
+  <div className="space-y-4">
+    {openSource.map((o) => (
+      <WindowCard key={o.name} title={o.name.toLowerCase()}>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-semibold">{o.name}</h3>
+            <div className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
+              <GitFork size={13} className="text-primary" />
+              {o.program}
+            </div>
+            <ul className="mt-3 space-y-2">
+              {o.bullets.map((b) => (
+                <li key={b} className="flex gap-2 text-sm text-foreground/90">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {o.stack.map((s) => (
+                <span key={s} className="ph-tag">
+                  {s}
+                </span>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {o.links.map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="ph-btn ph-btn-secondary !py-1.5 !text-xs"
+                >
+                  {l.label}
+                  <ArrowUpRight size={13} />
+                </a>
+              ))}
+            </div>
+          </div>
+          <div className="hidden shrink-0 sm:block">
+            <GSoCLogo />
+          </div>
+        </div>
+      </WindowCard>
+    ))}
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Contact
+// ---------------------------------------------------------------------------
+const contactLinks = [
+  {
+    href: 'tel:+201223729895',
+    label: 'Phone',
+    value: '+20 122 372 9895',
+    icon: <Phone size={16} />,
+  },
+  {
+    href: 'mailto:ahmedosamadiab@gmail.com',
+    label: 'Email',
+    value: 'ahmedosamadiab@gmail.com',
+    icon: <Mail size={16} />,
+  },
+  {
+    href: 'https://www.linkedin.com/in/ahmedosamadiab/',
+    label: 'LinkedIn',
+    value: 'in/ahmedosamadiab',
+    icon: <Linkedin size={16} />,
+    external: true,
+  },
+  {
+    href: 'https://github.com/AhmedOsamaAli',
+    label: 'GitHub',
+    value: 'AhmedOsamaAli',
+    icon: <Github size={16} />,
+    external: true,
+  },
+  {
+    href: 'https://ahmedosamaali.github.io/Blog/',
+    label: 'Blog',
+    value: 'ahmedosamaali.github.io/Blog',
+    icon: <BookOpen size={16} />,
+    external: true,
+  },
+];
+
+const Contact: React.FC = () => (
+  <WindowCard title="contact.sh">
+    <p className="mb-4 text-sm text-muted">
+      Let&apos;s build something great together. Reach out via any channel below:
+    </p>
+    <div className="grid gap-2 sm:grid-cols-2">
+      {contactLinks.map((c) => (
+        <a
+          key={c.label}
+          href={c.href}
+          target={c.external ? '_blank' : undefined}
+          rel={c.external ? 'noreferrer' : undefined}
+          className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition-colors hover:border-primary hover:bg-accent"
+        >
+          <span className="text-primary">{c.icon}</span>
+          <span className="min-w-0">
+            <span className="block text-sm font-medium">{c.label}</span>
+            <span className="block truncate font-mono text-xs text-muted">
+              {c.value}
+            </span>
+          </span>
+        </a>
       ))}
     </div>
-  );
-});
+  </WindowCard>
+);
 
+// ---------------------------------------------------------------------------
+// Animated site background (theme-aware, subtle motion)
+// ---------------------------------------------------------------------------
+const SiteBackground: React.FC = () => (
+  <div className="ph-bg" aria-hidden="true">
+    <div className="ph-bg-grid" />
+    <div className="ph-bg-blob ph-bg-blob-1" />
+    <div className="ph-bg-blob ph-bg-blob-2" />
+    <div className="ph-bg-blob ph-bg-blob-3" />
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// Root
+// ---------------------------------------------------------------------------
+export const Portfolio: React.FC = () => {
+  const [dark, toggleTheme] = useTheme();
+  const active = useActiveSection();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  return (
+    <div className="min-h-screen">
+      <SiteBackground />
+      <TopNav
+        dark={dark}
+        onToggleTheme={toggleTheme}
+        onToggleSidebar={() => setSidebarOpen((o) => !o)}
+        sidebarOpen={sidebarOpen}
+      />
+      <div className="mx-auto flex max-w-[1400px]">
+        <Sidebar
+          active={active}
+          open={sidebarOpen}
+          onNavigate={() => setSidebarOpen(false)}
+        />
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-20 bg-black/30 md:hidden"
+            aria-hidden="true"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 md:px-10">
+          <div className="mx-auto max-w-4xl space-y-14">
+            <Hero />
+
+            <Section id="experience" title="Experience" kicker="work_history">
+              <div className="space-y-4">
+                {experiences.map((exp) => (
+                  <RoleEntry key={exp.company + exp.start} {...exp} />
+                ))}
+              </div>
+            </Section>
+
+            <Section
+              id="internships"
+              title="Internships"
+              kicker="early_career"
+            >
+              <div className="space-y-4">
+                {internships.map((exp) => (
+                  <RoleEntry key={exp.company + exp.start} {...exp} />
+                ))}
+              </div>
+            </Section>
+
+            <Section
+              id="opensource"
+              title="Open Source"
+              kicker="contributions"
+            >
+              <OpenSource />
+            </Section>
+
+            <Section id="education" title="Education" kicker="academics">
+              <div className="space-y-4">
+                {education.map((ed) => (
+                  <WindowCard key={ed.institution} title="education.json">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-semibold">{ed.degree}</h3>
+                        <div className="mt-1 text-sm text-muted">
+                          {ed.institution}
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+                          <span className="font-mono text-xs">
+                            {ed.start} – {ed.end}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin size={13} /> {ed.location}
+                          </span>
+                        </div>
+                        {ed.notes && (
+                          <ul className="mt-3 space-y-2">
+                            {ed.notes.map((n) => (
+                              <li
+                                key={n}
+                                className="flex gap-2 text-sm text-foreground/90"
+                              >
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                                <span>{n}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                      {ed.institution
+                        .toLowerCase()
+                        .includes('german international university') && (
+                        <div className="shrink-0">
+                          <GIULogo />
+                        </div>
+                      )}
+                    </div>
+                  </WindowCard>
+                ))}
+              </div>
+            </Section>
+
+            <Section id="skills" title="Skills" kicker="tech_stack">
+              <SkillsTable />
+            </Section>
+
+            <Section
+              id="achievements"
+              title="Achievements"
+              kicker="recognition"
+            >
+              <Achievements />
+            </Section>
+
+            <Section id="projects" title="Projects" kicker="selected_work">
+              <Projects />
+            </Section>
+
+            <Section id="contact" title="Contact" kicker="get_in_touch">
+              <Contact />
+            </Section>
+
+            <footer className="border-t border-border pt-6 text-center font-mono text-xs text-muted">
+              &copy; {new Date().getFullYear()} Ahmed Osama · built with React +
+              Tailwind
+            </footer>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Portfolio;

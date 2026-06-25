@@ -46,6 +46,33 @@ export interface ProjectItem {
   bullets: string[];
   stack: string[];
 }
+export interface OpenSourceItem {
+  name: string;
+  program: string;
+  bullets: string[];
+  stack: string[];
+  links: { label: string; url: string }[];
+}
+
+export const openSource: OpenSourceItem[] = [
+  {
+    name: 'MetaHarmonizerApp',
+    program: 'Google Summer of Code 2026',
+    bullets: [
+      'Built a full-stack web platform (FastAPI + React/TypeScript) that standardizes clinical-genomics metadata, with async job processing via Redis queues and live WebSocket progress.',
+      'Architected a swappable engine-adapter layer over an ML matching pipeline, keeping the app decoupled and vendor-agnostic.',
+      'Designed PostgreSQL schema with versioned migrations (Alembic) and an append-only audit log for full traceability.',
+      'Implemented JWT/Argon2id auth with role-based access, hardened against the OWASP Top 10.',
+      'Shipped a standalone MCP server and Dockerized deployment with self-host and public profiles.',
+      'Validated end-to-end on production-scale data and collaborated directly with cBioPortal maintainers.'
+    ],
+    stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Redis', 'Docker'],
+    links: [
+      { label: 'Repository', url: 'https://github.com/AhmedOsamaAli/metaHarmonizer' },
+      { label: 'GSoC Project', url: 'https://summerofcode.withgoogle.com/programs/2026/projects/G7jxmBDW' }
+    ]
+  }
+];
 
 export const experiences: ExperienceItem[] = [
   {
@@ -97,11 +124,15 @@ export const internships: InternshipItem[] = [
 export const education: EducationItem[] = [
   {
     institution: 'German International University',
-    degree: "Bachelor's, Computer Science (Software Engineering, GPA: B+)",
+    degree: 'B.Sc. Computer Science',
     location: 'Cairo, Egypt',
     start: 'Sep 2021',
     end: 'Jun 2025',
-    notes: ['Full scholarship for outstanding high school academic performance.']
+    notes: [
+      'Specialized in Software Engineering, with a focus on systems design and full-stack development.',
+      'Graduated with a GPA of B+ across core computer science and engineering coursework.',
+      'Awarded a full scholarship for outstanding high school academic performance.'
+    ]
   }
 ];
 
@@ -205,32 +236,6 @@ export const projects: ProjectItem[] = [
       'Supports deep metric inspection (db_stats, locks, sessions, WAL) with colored terminal output.'
     ],
     stack: ['Go', 'PostgreSQL', 'OpenAI', 'Ollama', 'pgx', 'Cobra CLI']
-  },
-  {
-    name: 'MetaHarmonizer',
-    url: 'https://github.com/AhmedOsamaAli/metaHarmonizer',
-    start: 'Feb 2026',
-    end: 'Present',
-    bullets: [
-      'Automated biomedical metadata harmonization platform for cBioPortal cancer genomics datasets (GSoC 2026 demo).',
-      'Built a 4-stage ML cascade (dict/fuzzy → ontology → semantic embeddings → Gemini LLM) achieving <2s processing for 141 columns.',
-      'Developed a React + TypeScript curator dashboard with schema mapping, ontology review, quality analytics, and export.',
-      'Integrated NCI Thesaurus (NCIt/UBERON/OHMI) for ontology-level value normalization with batch accept/reject/edit workflows.'
-    ],
-    stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'SentenceTransformer', 'SQLite', 'Tailwind CSS']
-  },
-  {
-    name: 'Portfolio Website',
-    url: 'https://github.com/AhmedOsamaAli/Portfolio',
-    start: 'Nov 2025',
-    end: 'Present',
-    bullets: [
-      'Built a modern, responsive portfolio website using React and TypeScript.',
-      'Implemented a clean, professional design showcasing projects, experience, and achievements.',
-      'Utilized Vite for fast development and optimized production builds.',
-      'Integrated comprehensive testing with Vitest to ensure code quality.'
-    ],
-    stack: ['React', 'TypeScript', 'Vite', 'CSS', 'Vitest']
   },
   {
     name: 'E-commerce Platform',

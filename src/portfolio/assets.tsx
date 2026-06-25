@@ -14,7 +14,7 @@ export interface ImageAsset {
 export const assets = {
   headshot: {
     file: '/me.jpg',
-    alt: 'Portrait of Ahmed Osama',
+    alt: 'Ahmed Osama headshot',
     className: 'headshot',
     loading: 'eager'
   } as ImageAsset,
