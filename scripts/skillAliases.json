@@ -1,0 +1,15 @@
+{
+  "React.js": "React",
+  "ReactJS": "React",
+  "NextJS": "Next.js",
+  "Next": "Next.js",
+  "Node": "Node.js",
+  "NodeJS": "Node.js",
+  "Express": "Express.js",
+  "NestJS": "Nest.js",
+  "Nest": "Nest.js",
+  "Postgres": "PostgreSQL",
+  "Golang": "Go",
+  "Tailwind": "Tailwind CSS",
+  "Shell": "Bash"
+}

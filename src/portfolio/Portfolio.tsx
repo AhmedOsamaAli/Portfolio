@@ -9,6 +9,7 @@ import {
   achievements,
   projects,
   openSource,
+  profile,
 } from './data';
 import {
   MicrosoftLogo,
@@ -139,8 +140,8 @@ const TopNav: React.FC<{
           <Terminal size={15} />
         </span>
         <div className="leading-tight">
-          <div className="text-sm font-semibold">Ahmed Osama</div>
-          <div className="font-mono text-[11px] text-muted">software_engineer</div>
+          <div className="text-sm font-semibold">{profile.name}</div>
+          <div className="font-mono text-[11px] text-muted">{profile.role.toLowerCase().replace(/\s+/g, '_')}</div>
         </div>
       </div>
     </div>
@@ -154,7 +155,7 @@ const TopNav: React.FC<{
         {dark ? <Sun size={16} /> : <Moon size={16} />}
       </button>
       <a
-        href="mailto:ahmedosamadiab@gmail.com"
+        href={`mailto:${profile.email}`}
         className="ph-btn ph-btn-primary hidden sm:inline-flex"
       >
         <Mail size={15} />
@@ -202,7 +203,7 @@ const Sidebar: React.FC<{
       </div>
       <div className="flex flex-col gap-1">
         <a
-          href="https://github.com/AhmedOsamaAli"
+          href={profile.github}
           target="_blank"
           rel="noreferrer"
           className="ph-nav-link"
@@ -211,7 +212,7 @@ const Sidebar: React.FC<{
           <Github size={16} /> GitHub
         </a>
         <a
-          href="https://www.linkedin.com/in/ahmedosamadiab/"
+          href={profile.linkedin}
           target="_blank"
           rel="noreferrer"
           className="ph-nav-link"
@@ -220,7 +221,7 @@ const Sidebar: React.FC<{
           <Linkedin size={16} /> LinkedIn
         </a>
         <a
-          href="https://ahmedosamaali.github.io/Blog/"
+          href={profile.blog}
           target="_blank"
           rel="noreferrer"
           className="ph-nav-link"
@@ -345,7 +346,9 @@ const SkillsTable: React.FC = () => (
         </div>
         <table className="w-full border-collapse text-sm">
           <tbody>
-            {skills[group].map((s) => (
+            {skills[group].map((s) => {
+              const level = s.level;
+              return (
               <tr
                 key={s.name}
                 className="border-t border-border/70 transition-colors hover:bg-accent"
@@ -355,21 +358,22 @@ const SkillsTable: React.FC = () => (
                 </td>
                 <td className="py-1.5 pr-3 font-medium">{s.name}</td>
                 <td className="py-1.5">
-                  <div className="flex gap-1">
+                  {level !== undefined ? <div className="flex gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span
                         key={i}
                         className={`h-1.5 w-5 rounded-sm ${
-                          i < (s.level ?? 0)
+                          i < level
                             ? 'bg-primary'
                             : 'bg-border'
                         }`}
                       />
                     ))}
-                  </div>
+                  </div> : <span className="font-mono text-xs text-muted">Listed</span>}
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </WindowCard>
@@ -388,26 +392,24 @@ const Hero: React.FC = () => (
     <div>
       <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-xs text-muted">
         <span className="h-2 w-2 rounded-full bg-primary" />
-        Available for new work
+        {profile.availability}
       </div>
       <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
-        Software Engineer crafting resilient &amp; performant products.
+        {profile.headline}
       </h1>
       <p className="mt-4 max-w-2xl text-base text-muted">
-        Focused on clean architecture, automation, performance optimization and
-        developer experience. I build reliable pipelines and user-centric
-        full-stack applications.
+        {profile.bio}
       </p>
       <pre className="ph-code mt-5 max-w-md">
-        <span className="text-muted">$</span> whoami{'\n'}ahmed_osama ·
-        software_engineer @ microsoft
+        <span className="text-muted">$</span> whoami{'\n'}{profile.handle} ·{' '}
+        {profile.role.toLowerCase().replace(/\s+/g, '_')} @ {profile.company.toLowerCase()}
       </pre>
       <div className="mt-6 flex flex-wrap gap-3">
         <a href="#projects" className="ph-btn ph-btn-primary">
           View projects <ArrowUpRight size={15} />
         </a>
         <a
-          href="mailto:ahmedosamadiab@gmail.com"
+          href={`mailto:${profile.email}`}
           className="ph-btn ph-btn-secondary"
         >
           Get in touch
@@ -430,6 +432,7 @@ const Hero: React.FC = () => (
           <div className="relative h-full w-full overflow-hidden rounded-full bg-card">
             <Img
               asset="headshot"
+              alt={`${profile.name} headshot`}
               className="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
@@ -503,9 +506,9 @@ const Projects: React.FC = () => (
               <ArrowUpRight size={15} />
             </a>
           </h3>
-          <span className="shrink-0 font-mono text-xs text-muted">
-            {p.start} – {p.end}
-          </span>
+          {(p.start || p.end) && <span className="shrink-0 font-mono text-xs text-muted">
+            {[p.start, p.end].filter(Boolean).join(' \u2013 ')}
+          </span>}
         </div>
         <ul className="mt-3 space-y-2">
           {p.bullets.map((b) => (
@@ -585,35 +588,35 @@ const OpenSource: React.FC = () => (
 // ---------------------------------------------------------------------------
 const contactLinks = [
   {
-    href: 'tel:+201223729895',
+    href: `tel:${profile.phone.replace(/[^+\d]/g, '')}`,
     label: 'Phone',
-    value: '+20 122 372 9895',
+    value: profile.phone,
     icon: <Phone size={16} />,
   },
   {
-    href: 'mailto:ahmedosamadiab@gmail.com',
+    href: `mailto:${profile.email}`,
     label: 'Email',
-    value: 'ahmedosamadiab@gmail.com',
+    value: profile.email,
     icon: <Mail size={16} />,
   },
   {
-    href: 'https://www.linkedin.com/in/ahmedosamadiab/',
+    href: profile.linkedin,
     label: 'LinkedIn',
-    value: 'in/ahmedosamadiab',
+    value: new URL(profile.linkedin).pathname.replace(/^\/|\/$/g, ''),
     icon: <Linkedin size={16} />,
     external: true,
   },
   {
-    href: 'https://github.com/AhmedOsamaAli',
+    href: profile.github,
     label: 'GitHub',
-    value: 'AhmedOsamaAli',
+    value: new URL(profile.github).pathname.replace(/^\/|\/$/g, ''),
     icon: <Github size={16} />,
     external: true,
   },
   {
-    href: 'https://ahmedosamaali.github.io/Blog/',
+    href: profile.blog,
     label: 'Blog',
-    value: 'ahmedosamaali.github.io/Blog',
+    value: new URL(profile.blog).host + new URL(profile.blog).pathname.replace(/\/$/, ''),
     icon: <BookOpen size={16} />,
     external: true,
   },
@@ -786,7 +789,7 @@ export const Portfolio: React.FC = () => {
             </Section>
 
             <footer className="border-t border-border pt-6 text-center font-mono text-xs text-muted">
-              &copy; {new Date().getFullYear()} Ahmed Osama · built with React +
+              &copy; {new Date().getFullYear()} {profile.name} · built with React +
               Tailwind
             </footer>
           </div>

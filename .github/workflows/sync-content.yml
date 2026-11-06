@@ -1,0 +1,92 @@
+name: Propose portfolio updates
+
+on:
+  schedule:
+    - cron: '20 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: portfolio-content-proposals
+  cancel-in-progress: false
+
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AI_CACHE_DIR: ${{ github.workspace }}/.cache/portfolio-ai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Wait for any existing proposal to be reviewed
+        id: review
+        run: |
+          pending=$(gh pr list --repo "$GITHUB_REPOSITORY" --base master --state open \
+            --json headRefName --jq '[.[] | select(.headRefName | startswith("automation/portfolio-content-"))] | length')
+          if [ "$pending" -gt 0 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Waiting for the existing content proposal to be reviewed; live portfolio unchanged." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.review.outputs.run == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install declared dependencies
+        if: steps.review.outputs.run == 'true'
+        run: npm ci
+      - name: Validate sources before downloading the editor
+        id: sources
+        if: steps.review.outputs.run == 'true'
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: npm run sync:inspect
+      - uses: actions/cache@v4
+        if: steps.review.outputs.run == 'true' && steps.sources.outputs.changed == 'true'
+        with:
+          path: .cache/portfolio-ai
+          key: portfolio-cpu-ai-b12167-626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+      - name: Draft with the local CPU editor
+        if: steps.review.outputs.run == 'true' && steps.sources.outputs.changed == 'true'
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: node scripts/setup-local-ai.mjs --run-sync --write --report "$RUNNER_TEMP/portfolio-review.md"
+      - name: Test the proposed content and website
+        if: steps.review.outputs.run == 'true' && steps.sources.outputs.changed == 'true'
+        run: npm run ci
+      - name: Open a review-only pull request
+        if: steps.review.outputs.run == 'true' && steps.sources.outputs.changed == 'true'
+        run: |
+          cat "$RUNNER_TEMP/portfolio-review.md" >> "$GITHUB_STEP_SUMMARY"
+          if git diff --quiet -- src/portfolio/content.json scripts/sync-state.json; then
+            echo "No source or content changes. Live portfolio unchanged."
+            exit 0
+          fi
+          branch="automation/portfolio-content-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/portfolio/content.json scripts/sync-state.json
+          git commit -m "Update portfolio content" \
+            -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+          gh auth setup-git
+          git push origin "HEAD:$branch"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$(git rev-parse HEAD)" \
+            -f state=success -f context="Portfolio validation" \
+            -f description="Tests, types, and production build passed" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --silent
+          gh pr create --repo "$GITHUB_REPOSITORY" --base master --head "$branch" \
+            --title "Review portfolio content updates" --body-file "$RUNNER_TEMP/portfolio-review.md"
+      - name: Report unchanged sources
+        if: steps.review.outputs.run == 'true' && steps.sources.outputs.changed == 'false'
+        run: echo "Resume and selected projects are unchanged. No AI download, proposal, or deployment needed." >> "$GITHUB_STEP_SUMMARY"
