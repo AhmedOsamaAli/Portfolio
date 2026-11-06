@@ -1,0 +1,30 @@
+{
+  "github": {
+    "owner": "AhmedOsamaAli",
+    "topic": "portfolio-ready",
+    "exclude": ["Portfolio"]
+  },
+  "resume": {
+    "fileId": "1w_IkjYFafsex1Fv4ykO6P9vht_-x1Tcs",
+    "format": "pdf",
+    "access": "public"
+  },
+  "ai": {
+    "endpoint": "http://127.0.0.1:8087/v1/chat/completions",
+    "model": "portfolio-editor",
+    "contextSize": 12288,
+    "modelUrl": "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/7dabda4d13d513e3e842b20f0d435c732f172cbe/qwen2.5-3b-instruct-q4_k_m.gguf",
+    "modelSha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+    "modelBytes": 2104932768,
+    "runtime": {
+      "linux": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12167/llama-b12167-bin-ubuntu-x64.tar.gz",
+        "sha256": "b9fcdc51ca6e747085070ae01c7c8acaecdfeb4b6c8386166e2d4b067b36186f"
+      },
+      "win32": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12167/llama-b12167-bin-win-cpu-x64.zip",
+        "sha256": "430d22ba7693f2135f9d3e5301f7d773cf1b8ba89fdf5ca3a5cdc5d5a7173980"
+      }
+    }
+  }
+}

@@ -1,3 +1,23 @@
+import content from './content.json';
+
+export const profile: Profile = content.profile;
+
+export interface Profile {
+  name: string;
+  handle: string;
+  role: string;
+  company: string;
+  location: string;
+  availability: string;
+  headline: string;
+  bio: string;
+  email: string;
+  phone: string;
+  github: string;
+  linkedin: string;
+  blog: string;
+}
+
 export interface ExperienceItem {
   company: string;
   role: string;
@@ -41,8 +61,8 @@ export interface AchievementItem {
 export interface ProjectItem {
   name: string;
   url: string;
-  start: string;
-  end: string;
+  start?: string;
+  end?: string;
   bullets: string[];
   stack: string[];
 }
@@ -54,254 +74,16 @@ export interface OpenSourceItem {
   links: { label: string; url: string }[];
 }
 
-export const openSource: OpenSourceItem[] = [
-  {
-    name: 'MetaHarmonizerApp',
-    program: 'Google Summer of Code 2026',
-    bullets: [
-      'Built a full-stack web platform (FastAPI + React/TypeScript) that standardizes clinical-genomics metadata, with async job processing via Redis queues and live WebSocket progress.',
-      'Architected a swappable engine-adapter layer over an ML matching pipeline, keeping the app decoupled and vendor-agnostic.',
-      'Designed PostgreSQL schema with versioned migrations (Alembic) and an append-only audit log for full traceability.',
-      'Implemented JWT/Argon2id auth with role-based access, hardened against the OWASP Top 10.',
-      'Shipped a standalone MCP server and Dockerized deployment with self-host and public profiles.',
-      'Validated end-to-end on production-scale data and collaborated directly with cBioPortal maintainers.'
-    ],
-    stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Redis', 'Docker'],
-    links: [
-      { label: 'Repository', url: 'https://github.com/AhmedOsamaAli/metaHarmonizer' },
-      { label: 'GSoC Project', url: 'https://summerofcode.withgoogle.com/programs/2026/projects/G7jxmBDW' }
-    ]
-  }
-];
+export const openSource: OpenSourceItem[] = content.openSource;
 
-export const experiences: ExperienceItem[] = [
-  {
-    company: 'Microsoft',
-    role: 'Software Engineer',
-    location: 'Cairo, Egypt',
-    start: 'Jul 2025',
-    end: 'Present',
-    bullets: [
-      'Integrated a visual parity pipeline (Python + Bash) for automated UI checks in Clarity SDK.',
-      'Resolved issues in Clarity JS release pipeline ensuring smooth automated deployment.',
-      'Analyzed large-scale telemetry data across thousands of sites using ClickHouse; automated validation.',
-      'Designed end-to-end benchmarking pipeline for Clarity web apps to evaluate performance across releases.'
-    ],
-    logo: 'ms1.png'
-  }
-];
+export const experiences: ExperienceItem[] = content.experiences;
 
-export const internships: InternshipItem[] = [
-  {
-    company: 'DFKI',
-    role: 'Software Engineering Intern',
-    location: 'Berlin, Germany',
-    start: 'Nov 2024',
-    end: 'Apr 2025',
-    bullets: [
-      'Provided software architecture of DORIAN, a human-in-the-loop intelligent discovery assistant.',
-      'Implemented core parts using Neo4j, NextJS, FastAPI.',
-      'Implemented hybrid session management solution using Redis + MongoDB.'
-    ],
-    logo: 'dfki.png'
-  },
-  {
-    company: 'Microsoft',
-    role: 'Software Engineering Intern',
-    location: 'Cairo, Egypt',
-    start: 'Jul 2024',
-    end: 'Sep 2024',
-    bullets: [
-      'Profiled & optimized background threads in Clarity SDK (Kotlin, Android).',
-      'Built PoC for transitioning from WorkManager to JobScheduler.',
-      'Identified & resolved 3 memory leaks via LeakCanary integration.',
-      'Implemented baseline profiles improving runtime performance by 30%.'
-    ],
-    logo: 'ms1.png'
-  }
-];
+export const internships: InternshipItem[] = content.internships;
 
-export const education: EducationItem[] = [
-  {
-    institution: 'German International University',
-    degree: 'B.Sc. Computer Science',
-    location: 'Cairo, Egypt',
-    start: 'Sep 2021',
-    end: 'Jun 2025',
-    notes: [
-      'Specialized in Software Engineering, with a focus on systems design and full-stack development.',
-      'Graduated with a GPA of B+ across core computer science and engineering coursework.',
-      'Awarded a full scholarship for outstanding high school academic performance.'
-    ]
-  }
-];
+export const education: EducationItem[] = content.education;
 
-export const skills: SkillGroups = {
-  languages: [
-    { name: 'Python', icon: '🐍', color: '#3776ab', level: 5 },
-    { name: 'TypeScript', icon: '📘', color: '#3178c6', level: 5 },
-    { name: 'JavaScript', icon: '⚡', color: '#f7df1e', level: 5 },
-    { name: 'Java', icon: '☕', color: '#007396', level: 4 },
-    { name: 'Kotlin', icon: '🎯', color: '#7F52FF', level: 4 },
-    { name: 'C/C++', icon: '⚙️', color: '#00599C', level: 4 },
-    { name: 'C#', icon: '🎮', color: '#239120', level: 3 },
-    { name: 'SQL', icon: '🗄️', color: '#4479A1', level: 4 },
-    { name: 'Bash', icon: '🐚', color: '#4EAA25', level: 4 }
-  ],
-  frameworks: [
-    { name: 'React', icon: '⚛️', color: '#61dafb', level: 5 },
-    { name: 'Next.js', icon: '▲', color: '#000000', level: 4 },
-    { name: 'Node.js', icon: '🟢', color: '#339933', level: 5 },
-    { name: 'Express.js', icon: '🚂', color: '#000000', level: 5 },
-    { name: 'FastAPI', icon: '⚡', color: '#009688', level: 4 },
-    { name: 'Nest.js', icon: '🐱', color: '#E0234E', level: 4 },
-    { name: 'ASP.NET', icon: '🔷', color: '#512BD4', level: 3 },
-    { name: 'Android SDK', icon: '🤖', color: '#3DDC84', level: 4 },
-    { name: 'Vite', icon: '⚡', color: '#646CFF', level: 4 }
-  ],
-  databases: [
-    { name: 'MongoDB', icon: '🍃', color: '#47A248', level: 5 },
-    { name: 'PostgreSQL', icon: '🐘', color: '#4169E1', level: 4 },
-    { name: 'Redis', icon: '🔴', color: '#DC382D', level: 4 },
-    { name: 'Neo4j', icon: '🔵', color: '#008CC1', level: 3 },
-    { name: 'ClickHouse', icon: '⚡', color: '#FFCC01', level: 3 }
-  ],
-  tools: [
-    { name: 'Git', icon: '🔀', color: '#F05032', level: 5 },
-    { name: 'Docker', icon: '🐳', color: '#2496ED', level: 5 },
-    { name: 'Kafka', icon: '📨', color: '#231F20', level: 4 },
-    { name: 'Socket.IO', icon: '🔌', color: '#010101', level: 4 },
-    { name: 'JWT', icon: '🔐', color: '#000000', level: 4 },
-    { name: 'Linux', icon: '🐧', color: '#FCC624', level: 5 },
-    { name: 'LeakCanary', icon: '🔍', color: '#FF6F00', level: 3 },
-    { name: 'Vitest', icon: '✅', color: '#6E9F18', level: 4 }
-  ],
-  cloud: [
-    { name: 'AWS', icon: '☁️', color: '#FF9900', level: 3 },
-    { name: 'Azure', icon: '☁️', color: '#0089D6', level: 2 }
-  ]
-};
+export const skills: SkillGroups = content.skills;
 
-export const achievements: AchievementItem[] = [
-  {
-    title: '2x ICPC Regionalist',
-    description: 'Ranked 38th in Arab Collegiate Programming Contest among top 250 teams.',
-    links: [
-      { label: 'Ranking', url: 'https://drive.google.com/file/d/163BQmaXHslNyzkawH-5rsHrKFUDAnRV3/view?usp=sharing' },
-      { label: 'ICPCID', url: 'https://icpc.global/ICPCID/V6C8EA1AECZP' }
-    ],
-    icon: '🏆',
-    image: '/icpc.png'
-  },
-  {
-    title: 'EOI Bronze Medalist',
-    description: 'Bronze medal in Egyptian Olympiad in Informatics (EOI) 2020.',
-    icon: '🥉',
-    image: '/eoi.jpg'
-  },
-  {
-    title: 'Meta HackerCup 2023',
-    description: 'Reached top 1000 globally.',
-    links: [
-      { label: 'Certificate', url: 'https://drive.google.com/file/d/1QA3Rj7jMKdaYa92UbysGawWmfGp4uDn_/view' }
-    ],
-    icon: '⚡',
-    image: '/hackercup.png'
-  }
-];
+export const achievements: AchievementItem[] = content.achievements;
 
-export const projects: ProjectItem[] = [
-  {
-    name: 'Personal Blog',
-    url: 'https://github.com/AhmedOsamaAli/Blog',
-    start: 'Mar 2026',
-    end: 'Present',
-    bullets: [
-      'Built a full-stack, serverless blog using React, Vite, and GitHub Pages.',
-      'Integrated Supabase as a Backend-as-a-Service for PostgreSQL database and admin authentication.',
-      'Implemented a secure admin CMS panel with Markdown rendering, drafts, and Row Level Security.',
-      'Engineered offline-mode support using localStorage with PBKDF2 hashed passwords and brute-force lockouts.'
-    ],
-    stack: ['React', 'Vite', 'Supabase', 'Tailwind CSS', 'PostgreSQL']
-  },
-  {
-    name: 'pgwatch AI Copilot',
-    url: 'https://github.com/AhmedOsamaAli/pgwatch-copilot',
-    start: 'Feb 2026',
-    end: 'Present',
-    bullets: [
-      'Built a CLI AI copilot for PostgreSQL monitoring with pgwatch (GSoC 2026 proposal demo).',
-      'Interactive REPL with natural language Q&A, metric discovery, health overviews, and anomaly detection.',
-      'Integrated OpenAI and Ollama LLMs for AI-powered analysis and plain-English SQL generation.',
-      'Supports deep metric inspection (db_stats, locks, sessions, WAL) with colored terminal output.'
-    ],
-    stack: ['Go', 'PostgreSQL', 'OpenAI', 'Ollama', 'pgx', 'Cobra CLI']
-  },
-  {
-    name: 'E-commerce Platform',
-    url: 'https://github.com/AhmedOsamaAli/Ecommerce-Application',
-    start: 'Oct 2023',
-    end: 'Dec 2023',
-    bullets: [
-      'Implemented a scalable microservices architecture enabling independent deployment of services.',
-      'Integrated Apache Kafka for reliable asynchronous communication between services.',
-      'Designed and built a secure authentication & authorization system (JWT + role-based access).',
-      'Crafted a responsive Next.js frontend with dynamic product browsing and cart interactions.',
-      'Developed a robust Nest.js backend exposing REST APIs with validation & error handling.',
-      'Containerized all services with Docker to streamline local development & deployment.'
-    ],
-    stack: ['Next.js', 'Nest.js', 'Kafka', 'Docker', 'Microservices', 'TypeScript']
-  },
-  {
-    name: 'Staff Help Desk Application',
-    url: 'https://github.com/AhmedOsamaAli/Staff-Help-Desk',
-    start: 'Jul 2023',
-    end: 'Sep 2023',
-    bullets: [
-      'Streamlined support and ticketing processes for agents and users.',
-      'Real-time notifications & chat using Socket.IO.',
-      'Knowledge base feature for self-service issue resolution.',
-      'MERN stack for scalability and responsiveness.'
-    ],
-    stack: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'Socket.IO']
-  },
-  {
-    name: 'Cairo Metro System',
-    url: 'https://github.com/AhmedOsamaAli/Cairo-Metro-System',
-    start: 'Mar 2023',
-    end: 'Jun 2023',
-    bullets: [
-      'Web app for reserving & paying for metro tickets.',
-      'Upcoming travel views and ticket management.',
-      'Admin panel for stations, routes, modifications.',
-      'PostgreSQL for efficient data storage & retrieval.'
-    ],
-    stack: ['PostgreSQL', 'Express.js', 'React.js', 'Node.js']
-  },
-  {
-    name: 'GIU Bachelor Portal',
-    url: 'https://github.com/AhmedOsamaAli/GIU-bachelor-Portal',
-    start: 'Oct 2022',
-    end: 'Jan 2023',
-    bullets: [
-      'Constructed a portal for GIU students to browse available bachelor project opportunities.',
-      'Facilitated communication between professors and students via integrated messaging features.',
-      'Implemented server-side logic with ASP.NET and SQL for data persistence.',
-      'Designed a clean, accessible HTML/CSS interface for project discovery & interaction.'
-    ],
-    stack: ['ASP.NET', 'SQL', 'HTML', 'CSS']
-  },
-  {
-    name: 'Marvel-Wargame',
-    url: 'https://github.com/AhmedOsamaAli/Marvel-War-Game',
-    start: 'Mar 2022',
-    end: 'Jun 2022',
-    bullets: [
-      'Developed a two-player board game featuring team selection of 3 distinct Marvel characters.',
-      'Implemented unique character abilities and turn-based combat mechanics.',
-      'Applied Object-Oriented Programming (OOP) principles for characters, abilities, and game state.',
-      'Built an interactive GUI with Java Swing enabling engaging player experience.'
-    ],
-    stack: ['Java', 'OOP', 'Swing', 'Game Logic']
-  }
-];
+export const projects: ProjectItem[] = content.projects;
